@@ -33,6 +33,10 @@ MainWindow::MainWindow(QWidget* parent)
 
   // Set the layout.
   setLayout(layout);
+
+  // Init graphics area.
+  graphicsArea->initGrid(10, 10);
+  graphicsArea->drawGrid();
 }
 
 MainWindow::~MainWindow() { }

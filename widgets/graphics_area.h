@@ -3,17 +3,21 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsRectItem>
+#include <QGraphicsTextItem>
 #include <QWidget>
+#include <QMouseEvent>
 
 #include <memory>
 #include <vector>
+#include <set>
 
 #include "grid.h"
 
 /**
  * The graphics area.
  */
-class GraphicsArea : public QWidget {
+class GraphicsArea : public QGraphicsView {
   Q_OBJECT
 
   public slots:
@@ -61,62 +65,71 @@ class GraphicsArea : public QWidget {
   void initGrid(int width, int height);
 
   /**
+   * (Re)draw the grid.
+   * This will clear the scene and redraw the grid.
+   */
+  void drawGrid();
+
+  /**
    * Get the grid.
    *
    * \return The grid.
    */
   std::shared_ptr<Grid> getGrid() const;
 
-  /**
-   * Set size (in pixels) of each cell in the grid when displayed.
-   *
-   * \param size The size of each cell in the grid (in pixels).
+  /*
+   * Event handlers.
    */
-  void setCellDisplaySize(int size);
 
-  /**
-   * Get size (in pixels) of each cell in the grid when displayed.
-   *
-   * \return The size of each cell in the grid (in pixels).
-   */
-  int getCellDisplaySize() const;
+  protected:
 
-  /**
-   * (Re)draw the grid.
-   * This will clear the scene and redraw the grid.
-   */
-  void drawGrid();
+  void resizeEvent(QResizeEvent* event) override;
+
+  void showEvent(QShowEvent* event) override;
+
+  void mousePressEvent(QMouseEvent* event) override;
+
+  void mouseMoveEvent(QMouseEvent* event) override;
 
   private:
-
-  /*
-   * Data.
-   */
-
-  std::shared_ptr<Grid> grid = nullptr; // The grid.
-  int cellDisplaySize = 0; // The size of each cell in the grid (in pixels).
-
-  bool editMode = true; // True if the edit mode is active, false otherwise.
-  std::vector<std::shared_ptr<Grid::Cell>> selected; // The selected cells.
-
-  /*
-   * Widgets.
-   */
-
-  QGraphicsView* graphicsView; // The graphics view holding the scene.
-  QGraphicsScene* graphicsScene; // The graphics scene.
 
   /*
    * Graphics items.
    */
 
   struct CellGraphicsItem {
-    QGraphicsRectItem* rect; // The rectangle representing the cell.
-    QGraphicsTextItem* text; // The text to display inside the cell.
+    QGraphicsRectItem* rect = nullptr; // The rectangle representing the cell.
+    QGraphicsTextItem* text = nullptr; // The text to display inside the cell.
   };
 
   CellGraphicsItem* cellGraphicsItems
       = nullptr; // The graphics items representing the cells in the grid.
+
+  /**
+   * Update the graphics of a cell.
+   * 
+   * \param x The x coordinate of the cell.
+   * \param y The y coordinate of the cell.
+   * \param cell The cell.
+   * \param cellGraphicsItem The graphics item representing the cell.
+   */
+  void updateCellGraphics(int x, int y, Grid::Cell* cell, CellGraphicsItem* graphics);
+
+  /*
+   * Data.
+   */
+
+  std::shared_ptr<Grid> grid = nullptr; // The grid.
+  int cellDisplaySize = 24; // The size of each cell in the grid (in pixels).
+
+  bool editMode = true; // True if the edit mode is active, false otherwise.
+  std::set<std::shared_ptr<Grid::Cell>> selected; // The selected cells.
+
+  /*
+   * Widgets.
+   */
+
+  QGraphicsScene* graphicsScene; // The graphics scene.
 };
 
 #endif // GRAPHICS_AREA_H

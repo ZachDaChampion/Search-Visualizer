@@ -32,6 +32,7 @@ class Grid {
     };
 
     unsigned int cost = 1; // The cost of traversing the cell.
+    bool selected = false; // Whether the cell is selected.
     void* searchData = nullptr; // The search data associated with the cell.
     VisualizationState vis
         = VisualizationState::UNVISITED; // The visualization state of the cell.
@@ -66,7 +67,7 @@ class Grid {
 
   /**
    * Get a cell in the grid.
-   * 
+   *
    * \param x X coordinate of the cell.
    * \param y Y coordinate of the cell.
    * \return The cell at the given coordinates.
