@@ -77,13 +77,11 @@ void GraphicsArea::drawGrid()
       item.rect->setBrush(QBrush(Qt::white));
       item.rect->setZValue(0);
 
-      /*
-       * Setup text.
-       */
-
-      // Create the text item.
+      // Setup text.
       item.text = new QGraphicsTextItem(item.rect);
       item.text->setZValue(3);
+
+      // Update the graphics of the cell.
       updateCellGraphics(grid->getCell(x, y).get(), &item);
 
       // Add the item to the scene.
@@ -136,33 +134,38 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
     return;
   }
 
-  // Check mouse button.
+  /*
+   * If a mouse button is pressed, we want to process it and then update the
+   * last position. We also want to select/deselect cells if the left/right
+   * mouse buttons are pressed respectively.
+   *
+   * Selected cells are added to the `selected` set and deselected cells are
+   * removed from the set.
+   */
+
   auto buttons = event->buttons();
   if (buttons) {
+    std::shared_ptr<Grid::Cell> selectedCell = grid->getCell(x, y);
 
     // Check left mouse button.
-    if (buttons & Qt::LeftButton) {
-      std::shared_ptr<Grid::Cell> selectedCell = grid->getCell(x, y);
-      if (!selectedCell->selected) {
-        std::cout << "Selecting cell " << x << ", " << y << std::endl;
-        selectedCell->selected = true;
-        updateCellGraphics(
-            selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
-        selected.insert(selectedCell);
-      }
+    // Only select if the cell is not already selected.
+    if (buttons & Qt::LeftButton && !selectedCell->selected) {
+      std::cout << "Selecting cell " << x << ", " << y << std::endl;
+      selectedCell->selected = true;
+      selected.insert(selectedCell);
     }
 
     // Check right mouse button.
-    if (buttons & Qt::RightButton) {
-      std::shared_ptr<Grid::Cell> selectedCell = grid->getCell(x, y);
-      if (selectedCell->selected) {
-        std::cout << "Deselecting cell " << x << ", " << y << std::endl;
-        selectedCell->selected = false;
-        updateCellGraphics(
-            selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
-        selected.erase(selectedCell);
-      }
+    // Only deselect if the cell is already selected.
+    else if (buttons & Qt::RightButton && selectedCell->selected) {
+      std::cout << "Deselecting cell " << x << ", " << y << std::endl;
+      selectedCell->selected = false;
+      selected.erase(selectedCell);
     }
+
+    // Update the graphics of the cell (this will change the color)
+    updateCellGraphics(
+        selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
 
     // Update last position.
     lastX = x;
@@ -170,7 +173,14 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
   }
 }
 
-void GraphicsArea::mouseMoveEvent(QMouseEvent* event) { mousePressEvent(event); }
+void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
+{
+  /*
+   * Calling `mousePressedEvent` from `mouseMoveEvent` will allow us to
+   * select/deselect cells by dragging the mouse.
+   */
+  mousePressEvent(event);
+}
 
 /*
  * Private.

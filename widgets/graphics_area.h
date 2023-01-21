@@ -83,12 +83,36 @@ class GraphicsArea : public QGraphicsView {
 
   protected:
 
+  /**
+   * Handle a resize event.
+   * This will scale the graphics items to fit the new size of the widget.
+   *
+   * \param event The resize event.
+   */
   void resizeEvent(QResizeEvent* event) override;
 
+  /**
+   * Handle a show event.
+   * This will scale the graphics when the widget is shown.
+   *
+   * \param event The show event.
+   */
   void showEvent(QShowEvent* event) override;
 
+  /**
+   * Handle a mouse press event.
+   * This will select/deselect cells in the grid.
+   *
+   * \param event The mouse press event.
+   */
   void mousePressEvent(QMouseEvent* event) override;
 
+  /**
+   * Handle a mouse move event.
+   * This will select/deselect cells in the grid.
+   *
+   * \param event The mouse move event.
+   */
   void mouseMoveEvent(QMouseEvent* event) override;
 
   private:
