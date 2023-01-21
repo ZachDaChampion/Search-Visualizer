@@ -97,7 +97,7 @@ void GraphicsArea::drawGrid()
 std::shared_ptr<Grid> GraphicsArea::getGrid() const { return grid; }
 
 /*
- * Event handlers.
+ * Resize handlers.
  */
 
 void GraphicsArea::resizeEvent(QResizeEvent* event)
@@ -109,6 +109,11 @@ void GraphicsArea::showEvent(QShowEvent* event)
 {
   fitInView(graphicsScene->sceneRect(), Qt::KeepAspectRatio);
 }
+
+/*
+ * Mouse event handlers.
+ * These are used to select/deselect cells.
+ */
 
 void GraphicsArea::mousePressEvent(QMouseEvent* event)
 {
@@ -188,6 +193,7 @@ void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
 
 void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
 {
+  // Update the graphics of the cell based on its visualization state.
   switch (cell->vis) {
   case Cell::VisualizationState::WALL:
     graphics->rect->setBrush(QBrush(Qt::black));
@@ -223,6 +229,7 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     break;
   }
 
+  // If the cell is selected, add a yellow color effect.
   if (cell->selected) {
     QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect;
     effect->setColor(Qt::yellow);
@@ -233,6 +240,8 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     graphics->rect->setGraphicsEffect(nullptr);
     graphics->rect->setZValue(0);
   }
+
+  // Center the text in the cell.
   QRectF cellBounds = graphics->rect->boundingRect();
   int x = cellBounds.x();
   int y = cellBounds.y();
