@@ -3,10 +3,13 @@
 
 #include <QWidget>
 
+#include "sim_params.h"
+
 class BFSTab : public QWidget {
   Q_OBJECT
 
   public:
+
   /**
    * Construct a new BFS Tab.
    *
@@ -18,6 +21,14 @@ class BFSTab : public QWidget {
    * Destroy a BFS Tab.
    */
   ~BFSTab();
+
+  private:
+
+  /*
+   * Widgets.
+   */
+
+  SimParams* simParams; // The simulation parameters.
 };
 
 #endif // BFS_TAB_H

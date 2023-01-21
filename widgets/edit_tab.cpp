@@ -41,6 +41,7 @@ EditTab::EditTab(QWidget* parent)
   layout->addWidget(resetGridGroupBox);
 
   // Set the layout.
+  layout->addStretch();
   setLayout(layout);
 }
 

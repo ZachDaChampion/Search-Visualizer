@@ -15,7 +15,9 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
+        global_state.cpp
         grid.cpp
+        widgets/sim_params.cpp
         widgets/astar_tab.cpp
         widgets/bfs_tab.cpp
         widgets/dfs_tab.cpp

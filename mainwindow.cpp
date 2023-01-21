@@ -26,8 +26,8 @@ MainWindow::MainWindow(QWidget* parent)
   layout = new QHBoxLayout(this);
 
   // Add the graphics area and tab widget to the layout.
-  layout->addWidget(graphicsArea);
-  layout->addWidget(tabWidget);
+  layout->addWidget(graphicsArea, 1);
+  layout->addWidget(tabWidget, 0);
 
   // Set the layout.
   setLayout(layout);
