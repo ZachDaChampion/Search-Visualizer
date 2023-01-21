@@ -84,7 +84,7 @@ void GraphicsArea::drawGrid()
       // Create the text item.
       item.text = new QGraphicsTextItem(item.rect);
       item.text->setZValue(3);
-      updateCellGraphics(x, y, grid->getCell(x, y).get(), &item);
+      updateCellGraphics(grid->getCell(x, y).get(), &item);
 
       // Add the item to the scene.
       graphicsScene->addItem(item.rect);
@@ -147,7 +147,7 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
         std::cout << "Selecting cell " << x << ", " << y << std::endl;
         selectedCell->selected = true;
         updateCellGraphics(
-            x, y, selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
+            selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
         selected.insert(selectedCell);
       }
     }
@@ -159,7 +159,7 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
         std::cout << "Deselecting cell " << x << ", " << y << std::endl;
         selectedCell->selected = false;
         updateCellGraphics(
-            x, y, selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
+            selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
         selected.erase(selectedCell);
       }
     }
@@ -176,8 +176,7 @@ void GraphicsArea::mouseMoveEvent(QMouseEvent* event) { mousePressEvent(event); 
  * Private.
  */
 
-void GraphicsArea::updateCellGraphics(
-    int x, int y, Cell* cell, CellGraphicsItem* graphics)
+void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
 {
   switch (cell->vis) {
   case Cell::VisualizationState::WALL:
@@ -224,8 +223,10 @@ void GraphicsArea::updateCellGraphics(
     graphics->rect->setGraphicsEffect(nullptr);
     graphics->rect->setZValue(0);
   }
-
+  QRectF cellBounds = graphics->rect->boundingRect();
+  int x = cellBounds.x();
+  int y = cellBounds.y();
   QRectF rect = graphics->text->boundingRect();
-  graphics->text->setPos(x * cellDisplaySize + (cellDisplaySize - rect.width()) / 2,
-      y * cellDisplaySize + (cellDisplaySize - rect.height()) / 2);
+  graphics->text->setPos(x + (cellDisplaySize - rect.width()) / 2,
+      y + (cellDisplaySize - rect.height()) / 2);
 }

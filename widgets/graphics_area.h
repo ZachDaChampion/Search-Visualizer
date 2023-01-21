@@ -1,16 +1,16 @@
 #ifndef GRAPHICS_AREA_H
 #define GRAPHICS_AREA_H
 
-#include <QGraphicsScene>
-#include <QGraphicsView>
 #include <QGraphicsRectItem>
+#include <QGraphicsScene>
 #include <QGraphicsTextItem>
-#include <QWidget>
+#include <QGraphicsView>
 #include <QMouseEvent>
+#include <QWidget>
 
 #include <memory>
-#include <vector>
 #include <set>
+#include <vector>
 
 #include "grid.h"
 
@@ -107,13 +107,13 @@ class GraphicsArea : public QGraphicsView {
 
   /**
    * Update the graphics of a cell.
-   * 
+   *
    * \param x The x coordinate of the cell.
    * \param y The y coordinate of the cell.
    * \param cell The cell.
    * \param cellGraphicsItem The graphics item representing the cell.
    */
-  void updateCellGraphics(int x, int y, Grid::Cell* cell, CellGraphicsItem* graphics);
+  void updateCellGraphics(Grid::Cell* cell, CellGraphicsItem* graphics);
 
   /*
    * Data.
