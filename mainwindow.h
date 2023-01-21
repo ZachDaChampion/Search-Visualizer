@@ -1,14 +1,56 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QHBoxLayout>
+#include <QTabWidget>
+#include <QWidget>
 
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
+#include "astar_tab.h"
+#include "bfs_tab.h"
+#include "dfs_tab.h"
+#include "dijkstra_tab.h"
+#include "edit_tab.h"
+#include "graphics_area.h"
 
-public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+/**
+ * The main window of the application.
+ */
+class MainWindow : public QWidget {
+  Q_OBJECT
+
+  public:
+
+  /**
+   * Construct a new Main Window.
+   *
+   * \param parent The parent widget.
+   */
+  MainWindow(QWidget* parent = nullptr);
+
+  /**
+   * Destroy a Main Window.
+   */
+  ~MainWindow();
+
+  private:
+
+  /*
+   * Widgets in the main window.
+   */
+
+  QHBoxLayout* layout; // The layout of the main window.
+  GraphicsArea* graphicsArea; // The graphics area.
+  QTabWidget* tabWidget; // The widget holding the tabs.
+
+  /*
+   * Widgets for each tab.
+   */
+
+  EditTab* editTab; // The edit tab.
+  BFSTab* bfsTab; // The BFS tab.
+  DFSTab* dfsTab; // The DFS tab.
+  AStarTab* astarTab; // The A* tab.
+  DijkstraTab* dijkstraTab; // The Dijkstra tab.
 };
+
 #endif // MAINWINDOW_H

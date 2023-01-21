@@ -15,9 +15,15 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
-        main.cpp
+        grid.cpp
+        astar_tab.cpp
+        bfs_tab.cpp
+        dfs_tab.cpp
+        dijkstra_tab.cpp
+        edit_tab.cpp
+        graphics_area.cpp
         mainwindow.cpp
-        mainwindow.h
+        main.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
