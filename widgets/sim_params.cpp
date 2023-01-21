@@ -21,13 +21,12 @@ SimParams::SimParams(SimType simType, QWidget* parent)
   connect(drawCheckBox, &QCheckBox::stateChanged, this, &SimParams::drawClicked);
 
   // Create slider.
-  simSpeed = globalState.simSpeed();
+  int simSpeed = globalState.simSpeed();
   speedLabel = new QLabel("Speed (" + QString::number(simSpeed) + " ticks/sec)", this);
   speedSlider = new QSlider(Qt::Horizontal, this);
   speedSlider->setRange(1, 100);
   speedSlider->setValue(simSpeed);
   connect(speedSlider, &QSlider::valueChanged, this, &SimParams::speedChanged);
-  connect(speedSlider, &QSlider::sliderReleased, this, &SimParams::speedReleased);
 
   // Create buttons.
   startButton = new QPushButton("Start", this);
@@ -116,14 +115,8 @@ void SimParams::drawClicked(int state)
 
 void SimParams::speedChanged(int value)
 {
-  simSpeed = value;
-  speedLabel->setText("Speed (" + QString::number(value) + " ticks/sec)");
-}
-
-void SimParams::speedReleased()
-{
   GlobalState& globalState = GlobalState::singleton();
-  globalState.setSimSpeed(simSpeed);
+  globalState.setSimSpeed(value);
 }
 
 void SimParams::startClicked()

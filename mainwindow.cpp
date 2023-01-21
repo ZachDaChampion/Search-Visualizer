@@ -4,7 +4,7 @@ MainWindow::MainWindow(QWidget* parent)
     : QWidget(parent)
 {
   // Create the graphics area.
-  graphicsArea = new GraphicsArea(this);
+  graphicsArea = new GraphicsArea(400, 400, this);
 
   // Create the tab widget.
   tabWidget = new QTabWidget(this);

@@ -62,11 +62,6 @@ class SimParams : public QWidget {
   void speedChanged(int value);
 
   /**
-   * Speed slider released.
-   */
-  void speedReleased();
-
-  /**
    * Start button clicked.
    */
   void startClicked();
@@ -122,7 +117,6 @@ class SimParams : public QWidget {
    */
 
   GlobalState::SimType simType; // The type of simulation that the parameters are for.
-  int simSpeed; // The speed of the simulation.
 
   /*
    * Widgets.

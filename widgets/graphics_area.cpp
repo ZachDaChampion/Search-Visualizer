@@ -2,10 +2,11 @@
 
 #include <QHBoxLayout>
 
-GraphicsArea::GraphicsArea(QWidget* parent)
+GraphicsArea::GraphicsArea(int minWidth, int minHeight, QWidget* parent)
     : QWidget(parent)
 {
   graphicsView = new QGraphicsView(this);
+  graphicsView->setMinimumSize(minWidth, minHeight);
   graphicsScene = new QGraphicsScene(this);
   graphicsView->setScene(graphicsScene);
 

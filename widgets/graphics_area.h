@@ -44,7 +44,7 @@ class GraphicsArea : public QWidget {
    *
    * \param parent The parent widget.
    */
-  GraphicsArea(QWidget* parent = nullptr);
+  GraphicsArea(int minWidth, int minHeight, QWidget* parent = nullptr);
 
   /**
    * Destroy a Graphics Area.
