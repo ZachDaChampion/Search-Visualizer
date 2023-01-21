@@ -5,12 +5,12 @@
 #include <QTabWidget>
 #include <QWidget>
 
-#include "astar_tab.h"
-#include "bfs_tab.h"
-#include "dfs_tab.h"
-#include "dijkstra_tab.h"
-#include "edit_tab.h"
-#include "graphics_area.h"
+#include "widgets/astar_tab.h"
+#include "widgets/bfs_tab.h"
+#include "widgets/dfs_tab.h"
+#include "widgets/dijkstra_tab.h"
+#include "widgets/edit_tab.h"
+#include "widgets/graphics_area.h"
 
 /**
  * The main window of the application.

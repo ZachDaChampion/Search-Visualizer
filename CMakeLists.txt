@@ -16,12 +16,12 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
         grid.cpp
-        astar_tab.cpp
-        bfs_tab.cpp
-        dfs_tab.cpp
-        dijkstra_tab.cpp
-        edit_tab.cpp
-        graphics_area.cpp
+        widgets/astar_tab.cpp
+        widgets/bfs_tab.cpp
+        widgets/dfs_tab.cpp
+        widgets/dijkstra_tab.cpp
+        widgets/edit_tab.cpp
+        widgets/graphics_area.cpp
         mainwindow.cpp
         main.cpp
 )
