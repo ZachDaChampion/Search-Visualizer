@@ -12,6 +12,7 @@ SimParams::SimParams(SimType simType, QWidget* parent)
 
   // Create other sim label.
   otherSimLabel = new QLabel("Another simulation is currently running.", this);
+  otherSimLabel->setWordWrap(true);
   otherSimLabel->setVisible(false);
 
   // Create checkbox.
@@ -72,6 +73,12 @@ SimParams::SimParams(SimType simType, QWidget* parent)
   QVBoxLayout* mainLayout = new QVBoxLayout(this);
   mainLayout->addWidget(groupBox);
   setLayout(mainLayout);
+
+  // Connect signals from global state.
+  connect(&globalState, &GlobalState::simStateChanged, this, &SimParams::simStateSlot);
+  connect(&globalState, &GlobalState::simTypeChanged, this, &SimParams::simTypeSlot);
+  connect(&globalState, &GlobalState::simSpeedChanged, this, &SimParams::speedSlot);
+  connect(&globalState, &GlobalState::drawChanged, this, &SimParams::drawSlot);
 }
 
 SimParams::~SimParams() { }
@@ -88,7 +95,12 @@ void SimParams::speedSlot(int value)
   speedLabel->setText("Speed (" + QString::number(value) + " ticks/sec)");
 }
 
-void SimParams::simStateSlot(SimState state) { updateLayoutSimState(state); }
+void SimParams::simStateSlot(SimState state)
+{
+  GlobalState& globalState = GlobalState::singleton();
+  updateLayoutSimType(globalState.simType());
+  updateLayoutSimState(state);
+}
 
 void SimParams::simTypeSlot(GlobalState::SimType type) { updateLayoutSimType(type); }
 

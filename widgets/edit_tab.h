@@ -1,6 +1,7 @@
 #ifndef EDIT_TAB_H
 #define EDIT_TAB_H
 
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
@@ -37,7 +38,7 @@ class EditTab : public QWidget {
    */
 
   QGroupBox* setCellGroupBox; // The group box for the set cell section.
-  QVBoxLayout* setCellLayout; // The layout of the set cell section.
+  QGridLayout* setCellLayout; // The layout of the set cell section.
   QPushButton* setEmptyButton; // The button for setting an empty cell.
   QPushButton* setWallButton; // The button for setting a wall cell.
   QPushButton* setStartButton; // The button for setting the start cell.

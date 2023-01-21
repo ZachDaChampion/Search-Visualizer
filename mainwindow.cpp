@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   // Create the tab widget.
   tabWidget = new QTabWidget(this);
+  tabWidget->setUsesScrollButtons(false);
 
   // Create the tabs.
   editTab = new EditTab(this);
@@ -21,6 +22,7 @@ MainWindow::MainWindow(QWidget* parent)
   tabWidget->addTab(bfsTab, "BFS");
   tabWidget->addTab(dfsTab, "DFS");
   tabWidget->addTab(astarTab, "A*");
+  tabWidget->addTab(dijkstraTab, "Dijkstra");
 
   // Create the layout.
   layout = new QHBoxLayout(this);

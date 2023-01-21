@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "sim_params.h"
+
 class DijkstraTab : public QWidget {
   Q_OBJECT
 
@@ -18,6 +20,14 @@ class DijkstraTab : public QWidget {
    * Destroy a Dijkstra Tab.
    */
   ~DijkstraTab();
+
+  private:
+
+  /*
+   * Widgets.
+   */
+
+  SimParams* simParams; // The simulation parameters.
 };
 
 #endif // DIJKSTRA_TAB_H

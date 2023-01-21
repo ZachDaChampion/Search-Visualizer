@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "sim_params.h"
+
 class AStarTab : public QWidget {
   Q_OBJECT
 
@@ -18,6 +20,14 @@ class AStarTab : public QWidget {
    * Destroy an A* Tab.
    */
   ~AStarTab();
+
+  private:
+
+  /*
+   * Widgets.
+   */
+
+  SimParams* simParams; // The simulation parameters.
 };
 
 #endif // ASTAR_TAB_H

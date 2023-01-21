@@ -8,15 +8,15 @@ EditTab::EditTab(QWidget* parent)
 
   // Create the set cell section.
   setCellGroupBox = new QGroupBox("Set Cell", this);
-  setCellLayout = new QVBoxLayout(setCellGroupBox);
+  setCellLayout = new QGridLayout(setCellGroupBox);
   setEmptyButton = new QPushButton("Empty", setCellGroupBox);
   setWallButton = new QPushButton("Wall", setCellGroupBox);
   setStartButton = new QPushButton("Start", setCellGroupBox);
   setEndButton = new QPushButton("End", setCellGroupBox);
-  setCellLayout->addWidget(setEmptyButton);
-  setCellLayout->addWidget(setWallButton);
-  setCellLayout->addWidget(setStartButton);
-  setCellLayout->addWidget(setEndButton);
+  setCellLayout->addWidget(setEmptyButton, 0, 0);
+  setCellLayout->addWidget(setWallButton, 0, 1);
+  setCellLayout->addWidget(setStartButton, 1, 0);
+  setCellLayout->addWidget(setEndButton, 1, 1);
   layout->addWidget(setCellGroupBox);
 
   // Create the reset grid section.
@@ -35,6 +35,7 @@ EditTab::EditTab(QWidget* parent)
   resetGridSizeLayout->addWidget(resetGridSizeLabelX);
   resetGridSizeLayout->addWidget(resetGridHeightSpinBox);
   resetGridSizeLayout->addWidget(resetGridSizeLabel);
+  resetGridSizeLayout->addStretch();
   resetGridLayout->addLayout(resetGridSizeLayout);
   resetGridButton = new QPushButton("Reset Grid", resetGridGroupBox);
   resetGridLayout->addWidget(resetGridButton);

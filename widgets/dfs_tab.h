@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "sim_params.h"
+
 class DFSTab : public QWidget {
   Q_OBJECT
 
@@ -18,6 +20,14 @@ class DFSTab : public QWidget {
    * Destroy a DFS Tab.
    */
   ~DFSTab();
+
+  private:
+
+  /*
+   * Widgets.
+   */
+
+  SimParams* simParams; // The simulation parameters.
 };
 
 #endif // DFS_TAB_H
