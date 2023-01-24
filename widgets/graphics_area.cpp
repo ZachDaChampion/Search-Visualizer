@@ -210,6 +210,10 @@ void GraphicsArea::showEvent(QShowEvent* event)
 
 void GraphicsArea::mousePressEvent(QMouseEvent* event)
 {
+  if (!editMode) {
+    return;
+  }
+
   /*
    * When the mouse is pressed, we want to clear the selection and select the
    * cell under the mouse cursor. The latter is done by calling the mouse move event
@@ -229,6 +233,10 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
 
 void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
 {
+  if (!editMode) {
+    return;
+  }
+
   // Previous position is stored to avoid unnecessary updates.
   static int lastX = -1;
   static int lastY = -1;
@@ -286,6 +294,10 @@ void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
 
 void GraphicsArea::keyPressEvent(QKeyEvent* event)
 {
+  if (!editMode) {
+    return;
+  }
+
   const int key = event->key();
 
   /*

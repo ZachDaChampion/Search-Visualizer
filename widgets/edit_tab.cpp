@@ -7,16 +7,25 @@
 EditTab::EditTab(QWidget* parent)
     : QWidget(parent)
 {
-  // Create the layout.
-  layout = new QVBoxLayout(this);
+  // Create the layouts.
+  auto layout = new QVBoxLayout(this);
+  editWidget = new QWidget(this);
+  auto editLayout = new QVBoxLayout(this);
+  editWidget->setLayout(editLayout);
+
+  // Create label for when a sim is running.
+  noEditLabel
+      = new QLabel("A simulation is currently running. Editing is forbidden.", this);
+  noEditLabel->setWordWrap(true);
+  noEditLabel->setVisible(false);
 
   // Create set cell section.
-  QGroupBox* setCellGroupBox = new QGroupBox("Set Cell", this);
-  QVBoxLayout* setCellLayout = new QVBoxLayout(setCellGroupBox);
+  auto setCellGroupBox = new QGroupBox("Set Cell", this);
+  auto setCellLayout = new QVBoxLayout(setCellGroupBox);
 
   // Create set cell buttons section.
-  QGridLayout* setCellButtonsLayout = new QGridLayout();
-  QPushButton* setEmptyButton = new QPushButton("Cost", setCellGroupBox);
+  auto setCellButtonsLayout = new QGridLayout();
+  auto setEmptyButton = new QPushButton("Normal", setCellGroupBox);
   QObject::connect(
       setEmptyButton, &QPushButton::clicked, this, &EditTab::setEmptyButtonClicked);
   QPushButton* setWallButton = new QPushButton("Wall", setCellGroupBox);
@@ -35,8 +44,8 @@ EditTab::EditTab(QWidget* parent)
   setCellLayout->addLayout(setCellButtonsLayout);
 
   // Create set cell cost section.
-  QHBoxLayout* setCellCostLayout = new QHBoxLayout();
-  QLabel* setCellCostLabel = new QLabel("Cost:", setCellGroupBox);
+  auto setCellCostLayout = new QHBoxLayout;
+  auto setCellCostLabel = new QLabel("Cost:", setCellGroupBox);
   setCellCostSpinBox = new QSpinBox(setCellGroupBox);
   setCellCostSpinBox->setMinimum(GlobalState::MIN_CELL_COST);
   setCellCostSpinBox->setMaximum(GlobalState::MAX_CELL_COST);
@@ -46,20 +55,20 @@ EditTab::EditTab(QWidget* parent)
   setCellLayout->addLayout(setCellCostLayout);
 
   // Add set cell section to layout.
-  layout->addWidget(setCellGroupBox);
+  editLayout->addWidget(setCellGroupBox);
 
   // Create the reset grid section.
-  resetGridGroupBox = new QGroupBox("Reset Grid", this);
-  resetGridLayout = new QVBoxLayout(resetGridGroupBox);
-  resetGridSizeLayout = new QHBoxLayout();
+  auto resetGridGroupBox = new QGroupBox("Reset Grid", this);
+  auto resetGridLayout = new QVBoxLayout(resetGridGroupBox);
+  auto resetGridSizeLayout = new QHBoxLayout();
   resetGridWidthSpinBox = new QSpinBox(resetGridGroupBox);
   resetGridWidthSpinBox->setMinimum(1);
   resetGridWidthSpinBox->setMaximum(100);
-  resetGridSizeLabelX = new QLabel("x", resetGridGroupBox);
+  auto resetGridSizeLabelX = new QLabel("x", resetGridGroupBox);
   resetGridHeightSpinBox = new QSpinBox(resetGridGroupBox);
   resetGridHeightSpinBox->setMinimum(1);
   resetGridHeightSpinBox->setMaximum(100);
-  resetGridSizeLabel = new QLabel("cells", resetGridGroupBox);
+  auto resetGridSizeLabel = new QLabel("cells", resetGridGroupBox);
   resetGridSizeLayout->addWidget(resetGridWidthSpinBox);
   resetGridSizeLayout->addWidget(resetGridSizeLabelX);
   resetGridSizeLayout->addWidget(resetGridHeightSpinBox);
@@ -68,14 +77,35 @@ EditTab::EditTab(QWidget* parent)
   resetGridLayout->addLayout(resetGridSizeLayout);
   resetGridButton = new QPushButton("Reset Grid", resetGridGroupBox);
   resetGridLayout->addWidget(resetGridButton);
-  layout->addWidget(resetGridGroupBox);
+  editLayout->addWidget(resetGridGroupBox);
 
   // Set the layout.
+  layout->addWidget(noEditLabel);
+  layout->addWidget(editWidget);
   layout->addStretch();
   setLayout(layout);
+
+  // Connect slots and signals
+  GlobalState& globalState = GlobalState::singleton();
+  connect(&globalState, &GlobalState::simTypeChanged, this, &EditTab::simTypeSlot);
 }
 
 EditTab::~EditTab() { }
+
+/*
+ * Public slots.
+ */
+
+void EditTab::simTypeSlot(GlobalState::SimType type)
+{
+  if (type == GlobalState::SimType::NONE) {
+    editWidget->setVisible(true);
+    noEditLabel->setVisible(false);
+  } else {
+    editWidget->setVisible(false);
+    noEditLabel->setVisible(true);
+  }
+}
 
 /*
  * Private slots.

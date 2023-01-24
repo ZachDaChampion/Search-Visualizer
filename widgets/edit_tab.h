@@ -9,8 +9,22 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include "../global_state.h"
+
 class EditTab : public QWidget {
   Q_OBJECT
+
+  public slots:
+
+  /**
+   * Update widget visibility based on simulation type.
+   * 
+   * If there is no current simulation, edit controls will be show.
+   * Otherwise they will be hidden.
+   *
+   * \param type The simulation type.
+   */
+  void simTypeSlot(GlobalState::SimType type);
 
   private slots:
 
@@ -69,8 +83,8 @@ class EditTab : public QWidget {
   /*
    * Widgets in the edit tab.
    */
-
-  QVBoxLayout* layout; // The layout of the tab.
+  QWidget* editWidget; // Container widget for all edit controls.
+  QLabel* noEditLabel; // Label to be shown when editing is disabled.
 
   /*
    * Widgets for set cell section.
@@ -86,16 +100,9 @@ class EditTab : public QWidget {
    * Widgets for grid reset section.
    */
 
-  // General grid reset section.
-  QGroupBox* resetGridGroupBox; // The group box for the reset grid section.
-  QVBoxLayout* resetGridLayout; // The layout of the reset grid section.
-
   // Resize grid section.
-  QHBoxLayout* resetGridSizeLayout; // The layout of the set grid size section.
   QSpinBox* resetGridWidthSpinBox; // The spin box for the width of the grid.
-  QLabel* resetGridSizeLabelX; // The label for the "x" in the reset grid size section.
   QSpinBox* resetGridHeightSpinBox; // The spin box for the height of the grid.
-  QLabel* resetGridSizeLabel; // The label for the "cells" in the set grid size section.
 
   // Reset grid button.
   QPushButton* resetGridButton; // The button for resetting the grid.
