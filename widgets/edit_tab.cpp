@@ -1,5 +1,6 @@
 #include "edit_tab.h"
 
+#include "../global_state.h"
 #include "../grid.h"
 #include "graphics_area.h"
 
@@ -37,8 +38,8 @@ EditTab::EditTab(QWidget* parent)
   QHBoxLayout* setCellCostLayout = new QHBoxLayout();
   QLabel* setCellCostLabel = new QLabel("Cost:", setCellGroupBox);
   setCellCostSpinBox = new QSpinBox(setCellGroupBox);
-  setCellCostSpinBox->setMinimum(1);
-  setCellCostSpinBox->setMaximum(99);
+  setCellCostSpinBox->setMinimum(GlobalState::MIN_CELL_COST);
+  setCellCostSpinBox->setMaximum(GlobalState::MAX_CELL_COST);
   setCellCostLayout->addWidget(setCellCostLabel);
   setCellCostLayout->addWidget(setCellCostSpinBox);
   setCellCostLayout->addStretch();

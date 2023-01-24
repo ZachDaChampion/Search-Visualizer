@@ -1,4 +1,5 @@
 #include "graphics_area.h"
+#include "../global_state.h"
 #include "edit_tab.h"
 
 #include <QApplication>
@@ -141,8 +142,8 @@ void GraphicsArea::drawGrid()
   }
 
   // Get width and height of the grid.
-  int width = grid->getWidth();
-  int height = grid->getHeight();
+  const int width = grid->getWidth();
+  const int height = grid->getHeight();
 
   /*
    * Create new graphics items
@@ -237,8 +238,8 @@ void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
   QPointF scenePos = mapToScene(QPoint(pos.x(), pos.y()));
 
   // Get the cell coordinates.
-  int x = scenePos.x() / cellDisplaySize;
-  int y = scenePos.y() / cellDisplaySize;
+  const int x = scenePos.x() / cellDisplaySize;
+  const int y = scenePos.y() / cellDisplaySize;
 
   // Check if the mouse has moved to a new cell.
   if (x == lastX && y == lastY) {
@@ -259,8 +260,8 @@ void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
    * removed from the set.
    */
 
-  auto buttons = event->buttons();
-  bool leftMouse = buttons & Qt::LeftButton;
+  const auto buttons = event->buttons();
+  const bool leftMouse = buttons & Qt::LeftButton;
 
   if (leftMouse) {
     std::shared_ptr<Grid::Cell> selectedCell = grid->getCell(x, y);
@@ -272,9 +273,9 @@ void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
       selectedCell->selected = true;
       selected.insert(selectedCell);
 
-    // Update the graphics of the cell (this will change the color)
-    updateCellGraphics(
-        selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
+      // Update the graphics of the cell (this will change the color)
+      updateCellGraphics(
+          selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
     }
 
     // Update last position.
@@ -285,8 +286,13 @@ void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
 
 void GraphicsArea::keyPressEvent(QKeyEvent* event)
 {
-  // Check if the key is escape.
-  if (event->key() == Qt::Key_Escape) {
+  const int key = event->key();
+
+  /*
+   * The escape key should clear the selection.
+   */
+
+  if (key == Qt::Key_Escape) {
     // Clear the selection.
     for (std::shared_ptr<Cell> cell : selected) {
       cell->selected = false;
@@ -294,6 +300,31 @@ void GraphicsArea::keyPressEvent(QKeyEvent* event)
           cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
     }
     selected.clear();
+    return;
+  }
+
+  /*
+   * The number keys 1-9 should set the cell cost of all selected cells.
+   */
+
+  // Check if key value is less then 1 key.
+  if (key < Qt::Key_1) {
+    return;
+  }
+
+  // Calculate an offset from the 0 key.
+  // If this offset is between 1 and 9, it is the numeric equivalent of the key that was
+  // pressed. For instance, if Qt::Key_5 is pressed, offset will be 5.
+  int offset = key - Qt::Key_0;
+  if (offset > 9) { // We already know that offset is at least 1.
+    return;
+  }
+
+  // Update all selected cells with new cost.
+  for (std::shared_ptr<Cell> cell : selected) {
+    cell->cost = offset;
+    updateCellGraphics(
+        cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
   }
 }
 
@@ -309,11 +340,16 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     graphics->rect->setBrush(QBrush(Qt::black));
     graphics->text->setPlainText("");
     break;
-  case Cell::VisualizationState::UNVISITED:
-    graphics->rect->setBrush(QBrush(Qt::gray));
+  case Cell::VisualizationState::UNVISITED: {
+    // Scale the color between green and red based on the cost.
+    float ratio = (float)(cell->cost - GlobalState::MIN_CELL_COST)
+        / (float)(GlobalState::MAX_CELL_COST - GlobalState::MIN_CELL_COST);
+    int red = 100 * ratio + 75;
+    int green = 100 * (1.0 - ratio) + 75;
+    graphics->rect->setBrush(QBrush(QColor(red, green, 0)));
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText(QString::number(cell->cost));
-    break;
+  } break;
   case Cell::VisualizationState::OPEN_LIST:
     graphics->rect->setBrush(QBrush(Qt::lightGray));
     graphics->text->setDefaultTextColor(Qt::black);

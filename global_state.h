@@ -28,6 +28,9 @@ class GlobalState : public QObject {
     ASTAR // A* algorithm.
   };
 
+  static constexpr int MIN_CELL_COST = 1; // The minimum cost of a cell.
+  static constexpr int MAX_CELL_COST = 9; // The maximum cost of a cell.
+
   signals:
 
   /**
