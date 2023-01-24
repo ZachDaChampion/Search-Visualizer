@@ -34,6 +34,27 @@ class GraphicsArea : public QGraphicsView {
    */
   void updateInteractionMode(bool editMode);
 
+  /**
+   * Set the cost of the selected cells.
+   *
+   * \param cost The cost of the selected cells.
+   */
+  void setSelectedCellsCost(int cost);
+
+  /**
+   * Set the currently selected cell as the start cell.
+   *
+   * If multiple cells are selected, a random one will be selected as the start cell.
+   */
+  void setStartCellSelected();
+
+  /**
+   * Set the currently selected cell as the goal cell.
+   *
+   * If multiple cells are selected, a random one will be selected as the goal cell.
+   */
+  void setGoalCellSelected();
+
   signals:
 
   /**
@@ -148,6 +169,9 @@ class GraphicsArea : public QGraphicsView {
 
   bool editMode = true; // True if the edit mode is active, false otherwise.
   std::set<std::shared_ptr<Grid::Cell>> selected; // The selected cells.
+
+  std::shared_ptr<Grid::Cell> startCell = nullptr; // The start cell.
+  std::shared_ptr<Grid::Cell> goalCell = nullptr; // The goal cell.
 
   /*
    * Widgets.

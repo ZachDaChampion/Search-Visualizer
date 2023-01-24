@@ -20,11 +20,100 @@ GraphicsArea::GraphicsArea(int minWidth, int minHeight, QWidget* parent)
 
 GraphicsArea::~GraphicsArea() { }
 
+/*
+ * Public slots.
+ */
+
 void GraphicsArea::updateCells() { }
 
 void GraphicsArea::updateInteractionMode(bool editMode) { this->editMode = editMode; }
 
-void GraphicsArea::initGrid(int width, int height)
+void GraphicsArea::setSelectedCellsCost(int cost)
+{
+  // Iterate over selected cells and set their cost.
+  for (auto& cell : selectedCells) {
+
+    // Do nothing if the cell is a start or goal cell.
+    if (cell->vis == Cell::VisualizationState::START
+        || cell->vis == Cell::VisualizationState::GOAL) {
+      continue;
+    }
+
+    // Update the cell cost.
+    cell->cost = cost;
+
+    // Update the visualization state.
+    if (cost == Cell::COST_WALL) {
+      cell->vis = Cell::VisualizationState::WALL;
+    } else {
+      cell->vis = Cell::VisualizationState::NONE;
+    }
+
+    // Update the graphics.
+    updateCellGraphics(cell, &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+  }
+}
+
+void GraphicsArea::setStartCellSelected()
+{
+  // Do nothing if no cells are selected.
+  if (selectedCells.empty()) {
+    return;
+  }
+
+  // Get the first selected cell.
+  Cell* cell = selectedCells.front();
+
+  // Do nothing if the cell is already the start cell.
+  if (cell == startCell) {
+    return;
+  }
+
+  // Update the visualization state of the old start cell.
+  startCell->vis = Cell::VisualizationState::NONE;
+  updateCellGraphics(
+      startCell, &cellGraphicsItems[startCell->y * grid->getWidth() + startCell->x]);
+
+  // Update the visualization state of the new start cell.
+  cell->vis = Cell::VisualizationState::START;
+  updateCellGraphics(cell, &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+
+  // Update the start cell pointer.
+  startCell = cell;
+}
+
+void GraphicsArea::setGoalCellSelected()
+{
+  // Do nothing if no cells are selected.
+  if (selectedCells.empty()) {
+    return;
+  }
+
+  // Get the first selected cell.
+  Cell* cell = selectedCells.front();
+
+  // Do nothing if the cell is already the goal cell.
+  if (cell == goalCell) {
+    return;
+  }
+
+  // Update the visualization state of the old goal cell.
+  goalCell->vis = Cell::VisualizationState::NONE;
+  updateCellGraphics(
+      goalCell, &cellGraphicsItems[goalCell->y * grid->getWidth() + goalCell->x]);
+
+  // Update the visualization state of the new goal cell.
+  cell->vis = Cell::VisualizationState::GOAL;
+  updateCellGraphics(cell, &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+
+  // Update the goal cell pointer.
+  goalCell = cell;
+}
+
+void GraphicsArea::setSelectedCe
+
+    void
+    GraphicsArea::initGrid(int width, int height)
 {
   // Delete the old graphics items.
   graphicsScene->clear();
@@ -36,9 +125,11 @@ void GraphicsArea::initGrid(int width, int height)
   // Create a new grid.
   grid = std::make_shared<Grid>(width, height);
 
-  // Set start and end cells.
-  grid->getCell(0, 0)->vis = Cell::VisualizationState::START;
-  grid->getCell(width - 1, height - 1)->vis = Cell::VisualizationState::GOAL;
+  // Set start and goal cells.
+  startCell = grid->getCell(0, 0);
+  goalCell = grid->getCell(width - 1, height - 1);
+  startCell->vis = Cell::VisualizationState::START;
+  goalCell->vis = Cell::VisualizationState::GOAL;
 }
 
 void GraphicsArea::drawGrid()
