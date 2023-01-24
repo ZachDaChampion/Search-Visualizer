@@ -17,6 +17,10 @@ GraphicsArea::GraphicsArea(int minWidth, int minHeight, QWidget* parent)
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   graphicsScene = new QGraphicsScene(this);
   setScene(graphicsScene);
+
+  // Connect signals and slots.
+  GlobalState& globalState = GlobalState::singleton();
+  connect(&globalState, &GlobalState::simTypeChanged, this, &GraphicsArea::simTypeSlot);
 }
 
 GraphicsArea::~GraphicsArea() { }
@@ -180,6 +184,31 @@ void GraphicsArea::drawGrid()
       // Add the item to the scene.
       graphicsScene->addItem(item.rect);
     }
+  }
+}
+
+/*
+ * Private slots.
+ */
+
+void GraphicsArea::simTypeSlot(GlobalState::SimType type)
+{
+
+  /*
+   * If no sim is running, simply set the editMode flag.
+   * If a sim is running, unset the editMode flag and clear the current selection.
+   */
+
+  if (type == GlobalState::SimType::NONE) {
+    editMode = true;
+  } else {
+    editMode = false;
+    for (std::shared_ptr<Cell> cell : selected) {
+      cell->selected = false;
+      updateCellGraphics(
+          cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+    }
+    selected.clear();
   }
 }
 

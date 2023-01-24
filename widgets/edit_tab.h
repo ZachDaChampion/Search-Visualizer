@@ -14,18 +14,6 @@
 class EditTab : public QWidget {
   Q_OBJECT
 
-  public slots:
-
-  /**
-   * Update widget visibility based on simulation type.
-   * 
-   * If there is no current simulation, edit controls will be show.
-   * Otherwise they will be hidden.
-   *
-   * \param type The simulation type.
-   */
-  void simTypeSlot(GlobalState::SimType type);
-
   private slots:
 
   /**
@@ -47,6 +35,15 @@ class EditTab : public QWidget {
    * "Set cell to goal" button clicked.
    */
   void setGoalButtonClicked();
+
+  /**
+   * Update widget visibility based on simulation type.
+   * If there is no current simulation, edit controls will be show.
+   * Otherwise they will be hidden.
+   *
+   * \param type The simulation type.
+   */
+  void simTypeSlot(GlobalState::SimType type);
 
   public:
   /**

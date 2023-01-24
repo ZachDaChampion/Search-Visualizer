@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "../global_state.h"
 #include "grid.h"
 
 /**
@@ -34,7 +35,7 @@ class GraphicsArea : public QGraphicsView {
    */
   void updateInteractionMode(bool editMode);
 
-    /**
+  /**
    * Set the cost of the selected cells.
    *
    * \param cost The cost of the selected cells.
@@ -43,17 +44,24 @@ class GraphicsArea : public QGraphicsView {
 
   /**
    * Set the currently selected cell as the start cell.
-   *
    * If multiple cells are selected, a random one will be selected as the start cell.
    */
   void setStartCellSelected();
 
   /**
    * Set the currently selected cell as the goal cell.
-   *
    * If multiple cells are selected, a random one will be selected as the goal cell.
    */
   void setGoalCellSelected();
+
+  private slots:
+  /**
+   * Update editability based on simulation type.
+   * Editing will be enabled when no simulation is running and disabled otherwise.
+   *
+   * \param type The simulation type.
+   */
+  void simTypeSlot(GlobalState::SimType type);
 
   signals:
 
@@ -139,7 +147,7 @@ class GraphicsArea : public QGraphicsView {
   /**
    * Handle a key press event.
    * This allows the escape key to be used to deselect all cells.
-   * 
+   *
    * \param event The key press event.
    */
   void keyPressEvent(QKeyEvent* event) override;
