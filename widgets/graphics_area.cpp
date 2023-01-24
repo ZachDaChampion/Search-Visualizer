@@ -1,5 +1,6 @@
 #include "graphics_area.h"
 
+#include <QApplication>
 #include <QGraphicsColorizeEffect>
 #include <QHBoxLayout>
 #include <iostream>
@@ -149,20 +150,24 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
    */
 
   auto buttons = event->buttons();
-  if (buttons) {
+  bool leftMouse = buttons & Qt::LeftButton;
+  bool rightMouse = buttons & Qt::RightButton;
+  bool ctrlPressed = QApplication::keyboardModifiers() & Qt::ControlModifier;
+
+  if (leftMouse || rightMouse) {
     std::shared_ptr<Grid::Cell> selectedCell = grid->getCell(x, y);
 
-    // Check left mouse button.
+    // Check left mouse button without ctrl pressed.
     // Only select if the cell is not already selected.
-    if (buttons & Qt::LeftButton && !selectedCell->selected) {
+    if (leftMouse && !ctrlPressed && !selectedCell->selected) {
       std::cout << "Selecting cell " << x << ", " << y << std::endl;
       selectedCell->selected = true;
       selected.insert(selectedCell);
     }
 
-    // Check right mouse button.
+    // Check right mouse button or ctrl+left mouse.
     // Only deselect if the cell is already selected.
-    else if (buttons & Qt::RightButton && selectedCell->selected) {
+    else if ((rightMouse || (ctrlPressed && leftMouse)) && selectedCell->selected) {
       std::cout << "Deselecting cell " << x << ", " << y << std::endl;
       selectedCell->selected = false;
       selected.erase(selectedCell);
