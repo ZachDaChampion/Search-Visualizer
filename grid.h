@@ -31,6 +31,8 @@ class Grid {
       PATH // The cell is part of the path.
     };
 
+    int x = 0; // The x coordinate of the cell.
+    int y = 0; // The y coordinate of the cell.
     unsigned int cost = 1; // The cost of traversing the cell.
     bool selected = false; // Whether the cell is selected.
     void* searchData = nullptr; // The search data associated with the cell.

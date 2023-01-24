@@ -1,4 +1,5 @@
 #include "graphics_area.h"
+#include "edit_tab.h"
 
 #include <QApplication>
 #include <QGraphicsColorizeEffect>
@@ -10,7 +11,6 @@ using Cell = Grid::Cell;
 GraphicsArea::GraphicsArea(int minWidth, int minHeight, QWidget* parent)
     : QGraphicsView(parent)
 {
-
   setMinimumSize(minWidth, minHeight);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -28,10 +28,10 @@ void GraphicsArea::updateCells() { }
 
 void GraphicsArea::updateInteractionMode(bool editMode) { this->editMode = editMode; }
 
-void GraphicsArea::setSelectedCellsCost(int cost)
+void GraphicsArea::setCostSelectedCells(int cost)
 {
   // Iterate over selected cells and set their cost.
-  for (auto& cell : selectedCells) {
+  for (auto& cell : selected) {
 
     // Do nothing if the cell is a start or goal cell.
     if (cell->vis == Cell::VisualizationState::START
@@ -43,40 +43,42 @@ void GraphicsArea::setSelectedCellsCost(int cost)
     cell->cost = cost;
 
     // Update the visualization state.
-    if (cost == Cell::COST_WALL) {
+    if (cost == Cell::WALL_COST) {
       cell->vis = Cell::VisualizationState::WALL;
     } else {
-      cell->vis = Cell::VisualizationState::NONE;
+      cell->vis = Cell::VisualizationState::UNVISITED;
     }
 
     // Update the graphics.
-    updateCellGraphics(cell, &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+    updateCellGraphics(
+        cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
   }
 }
 
 void GraphicsArea::setStartCellSelected()
 {
   // Do nothing if no cells are selected.
-  if (selectedCells.empty()) {
+  if (selected.empty()) {
     return;
   }
 
   // Get the first selected cell.
-  Cell* cell = selectedCells.front();
+  std::shared_ptr<Cell> cell = *selected.begin();
 
-  // Do nothing if the cell is already the start cell.
-  if (cell == startCell) {
+  // Do nothing if the cell is the start or goal cell.
+  if (cell == startCell || cell == goalCell) {
     return;
   }
 
   // Update the visualization state of the old start cell.
-  startCell->vis = Cell::VisualizationState::NONE;
-  updateCellGraphics(
-      startCell, &cellGraphicsItems[startCell->y * grid->getWidth() + startCell->x]);
+  startCell->vis = Cell::VisualizationState::UNVISITED;
+  updateCellGraphics(startCell.get(),
+      &cellGraphicsItems[startCell->y * grid->getWidth() + startCell->x]);
 
   // Update the visualization state of the new start cell.
   cell->vis = Cell::VisualizationState::START;
-  updateCellGraphics(cell, &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+  updateCellGraphics(
+      cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
 
   // Update the start cell pointer.
   startCell = cell;
@@ -85,35 +87,33 @@ void GraphicsArea::setStartCellSelected()
 void GraphicsArea::setGoalCellSelected()
 {
   // Do nothing if no cells are selected.
-  if (selectedCells.empty()) {
+  if (selected.empty()) {
     return;
   }
 
   // Get the first selected cell.
-  Cell* cell = selectedCells.front();
+  std::shared_ptr<Cell> cell = *selected.begin();
 
-  // Do nothing if the cell is already the goal cell.
-  if (cell == goalCell) {
+  // Do nothing if the cell is the start or goal cell.
+  if (cell == startCell || cell == goalCell) {
     return;
   }
 
   // Update the visualization state of the old goal cell.
-  goalCell->vis = Cell::VisualizationState::NONE;
+  goalCell->vis = Cell::VisualizationState::UNVISITED;
   updateCellGraphics(
-      goalCell, &cellGraphicsItems[goalCell->y * grid->getWidth() + goalCell->x]);
+      goalCell.get(), &cellGraphicsItems[goalCell->y * grid->getWidth() + goalCell->x]);
 
   // Update the visualization state of the new goal cell.
   cell->vis = Cell::VisualizationState::GOAL;
-  updateCellGraphics(cell, &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+  updateCellGraphics(
+      cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
 
   // Update the goal cell pointer.
   goalCell = cell;
 }
 
-void GraphicsArea::setSelectedCe
-
-    void
-    GraphicsArea::initGrid(int width, int height)
+void GraphicsArea::initGrid(int width, int height)
 {
   // Delete the old graphics items.
   graphicsScene->clear();
@@ -209,6 +209,25 @@ void GraphicsArea::showEvent(QShowEvent* event)
 
 void GraphicsArea::mousePressEvent(QMouseEvent* event)
 {
+  /*
+   * When the mouse is pressed, we want to clear the selection and select the
+   * cell under the mouse cursor. The latter is done by calling the mouse move event
+   * handler, since the code is the same.
+   */
+
+  // Clear the selection.
+  for (std::shared_ptr<Cell> cell : selected) {
+    cell->selected = false;
+    updateCellGraphics(
+        cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+  }
+  selected.clear();
+
+  mouseMoveEvent(event);
+}
+
+void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
+{
   // Previous position is stored to avoid unnecessary updates.
   static int lastX = -1;
   static int lastY = -1;
@@ -242,31 +261,21 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
 
   auto buttons = event->buttons();
   bool leftMouse = buttons & Qt::LeftButton;
-  bool rightMouse = buttons & Qt::RightButton;
-  bool ctrlPressed = QApplication::keyboardModifiers() & Qt::ControlModifier;
 
-  if (leftMouse || rightMouse) {
+  if (leftMouse) {
     std::shared_ptr<Grid::Cell> selectedCell = grid->getCell(x, y);
 
     // Check left mouse button without ctrl pressed.
     // Only select if the cell is not already selected.
-    if (leftMouse && !ctrlPressed && !selectedCell->selected) {
+    if (!selectedCell->selected) {
       std::cout << "Selecting cell " << x << ", " << y << std::endl;
       selectedCell->selected = true;
       selected.insert(selectedCell);
-    }
-
-    // Check right mouse button or ctrl+left mouse.
-    // Only deselect if the cell is already selected.
-    else if ((rightMouse || (ctrlPressed && leftMouse)) && selectedCell->selected) {
-      std::cout << "Deselecting cell " << x << ", " << y << std::endl;
-      selectedCell->selected = false;
-      selected.erase(selectedCell);
-    }
 
     // Update the graphics of the cell (this will change the color)
     updateCellGraphics(
         selectedCell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
+    }
 
     // Update last position.
     lastX = x;
@@ -274,13 +283,18 @@ void GraphicsArea::mousePressEvent(QMouseEvent* event)
   }
 }
 
-void GraphicsArea::mouseMoveEvent(QMouseEvent* event)
+void GraphicsArea::keyPressEvent(QKeyEvent* event)
 {
-  /*
-   * Calling `mousePressedEvent` from `mouseMoveEvent` will allow us to
-   * select/deselect cells by dragging the mouse.
-   */
-  mousePressEvent(event);
+  // Check if the key is escape.
+  if (event->key() == Qt::Key_Escape) {
+    // Clear the selection.
+    for (std::shared_ptr<Cell> cell : selected) {
+      cell->selected = false;
+      updateCellGraphics(
+          cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+    }
+    selected.clear();
+  }
 }
 
 /*

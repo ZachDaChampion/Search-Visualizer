@@ -37,6 +37,14 @@ MainWindow::MainWindow(QWidget* parent)
   // Init graphics area.
   graphicsArea->initGrid(10, 10);
   graphicsArea->drawGrid();
+
+  // Connect signals and slots.
+  QObject::connect(editTab, &EditTab::setCostSelectedCells, graphicsArea,
+      &GraphicsArea::setCostSelectedCells);
+  QObject::connect(editTab, &EditTab::setStartCellSelected, graphicsArea,
+      &GraphicsArea::setStartCellSelected);
+  QObject::connect(editTab, &EditTab::setGoalCellSelected, graphicsArea,
+      &GraphicsArea::setGoalCellSelected);
 }
 
 MainWindow::~MainWindow() { }

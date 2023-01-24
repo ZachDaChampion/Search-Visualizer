@@ -12,6 +12,28 @@
 class EditTab : public QWidget {
   Q_OBJECT
 
+  private slots:
+
+  /**
+   * "Set cell to empty" button clicked.
+   */
+  void setEmptyButtonClicked();
+
+  /**
+   * "Set cell to wall" button clicked.
+   */
+  void setWallButtonClicked();
+
+  /**
+   * "Set cell to start" button clicked.
+   */
+  void setStartButtonClicked();
+
+  /**
+   * "Set cell to goal" button clicked.
+   */
+  void setGoalButtonClicked();
+
   public:
   /**
    * Construct a new Edit Tab.
@@ -25,6 +47,23 @@ class EditTab : public QWidget {
    */
   ~EditTab();
 
+  signals:
+
+  /**
+   * Signal that the selected cells should have their cost set.
+   */
+  void setCostSelectedCells(int cost);
+
+  /**
+   * Signal that the selected cells should be set as the start cell.
+   */
+  void setStartCellSelected();
+
+  /**
+   * Signal that the selected cells should be set as the goal cell.
+   */
+  void setGoalCellSelected();
+
   private:
 
   /*
@@ -37,12 +76,11 @@ class EditTab : public QWidget {
    * Widgets for set cell section.
    */
 
-  QGroupBox* setCellGroupBox; // The group box for the set cell section.
-  QGridLayout* setCellLayout; // The layout of the set cell section.
+  QSpinBox* setCellCostSpinBox; // The spin box for the cost of the cell.
   QPushButton* setEmptyButton; // The button for setting an empty cell.
   QPushButton* setWallButton; // The button for setting a wall cell.
   QPushButton* setStartButton; // The button for setting the start cell.
-  QPushButton* setEndButton; // The button for setting the end cell.
+  QPushButton* setGoalButton; // The button for setting the goal cell.
 
   /*
    * Widgets for grid reset section.

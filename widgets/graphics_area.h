@@ -34,12 +34,12 @@ class GraphicsArea : public QGraphicsView {
    */
   void updateInteractionMode(bool editMode);
 
-  /**
+    /**
    * Set the cost of the selected cells.
    *
    * \param cost The cost of the selected cells.
    */
-  void setSelectedCellsCost(int cost);
+  void setCostSelectedCells(int cost);
 
   /**
    * Set the currently selected cell as the start cell.
@@ -135,6 +135,14 @@ class GraphicsArea : public QGraphicsView {
    * \param event The mouse move event.
    */
   void mouseMoveEvent(QMouseEvent* event) override;
+
+  /**
+   * Handle a key press event.
+   * This allows the escape key to be used to deselect all cells.
+   * 
+   * \param event The key press event.
+   */
+  void keyPressEvent(QKeyEvent* event) override;
 
   private:
 

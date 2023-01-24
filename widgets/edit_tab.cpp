@@ -1,22 +1,50 @@
 #include "edit_tab.h"
 
+#include "../grid.h"
+#include "graphics_area.h"
+
 EditTab::EditTab(QWidget* parent)
     : QWidget(parent)
 {
   // Create the layout.
   layout = new QVBoxLayout(this);
 
-  // Create the set cell section.
-  setCellGroupBox = new QGroupBox("Set Cell", this);
-  setCellLayout = new QGridLayout(setCellGroupBox);
-  setEmptyButton = new QPushButton("Empty", setCellGroupBox);
-  setWallButton = new QPushButton("Wall", setCellGroupBox);
-  setStartButton = new QPushButton("Start", setCellGroupBox);
-  setEndButton = new QPushButton("End", setCellGroupBox);
-  setCellLayout->addWidget(setEmptyButton, 0, 0);
-  setCellLayout->addWidget(setWallButton, 0, 1);
-  setCellLayout->addWidget(setStartButton, 1, 0);
-  setCellLayout->addWidget(setEndButton, 1, 1);
+  // Create set cell section.
+  QGroupBox* setCellGroupBox = new QGroupBox("Set Cell", this);
+  QVBoxLayout* setCellLayout = new QVBoxLayout(setCellGroupBox);
+
+  // Create set cell buttons section.
+  QGridLayout* setCellButtonsLayout = new QGridLayout();
+  QPushButton* setEmptyButton = new QPushButton("Cost", setCellGroupBox);
+  QObject::connect(
+      setEmptyButton, &QPushButton::clicked, this, &EditTab::setEmptyButtonClicked);
+  QPushButton* setWallButton = new QPushButton("Wall", setCellGroupBox);
+  QObject::connect(
+      setWallButton, &QPushButton::clicked, this, &EditTab::setWallButtonClicked);
+  QPushButton* setStartButton = new QPushButton("Start", setCellGroupBox);
+  QObject::connect(
+      setStartButton, &QPushButton::clicked, this, &EditTab::setStartButtonClicked);
+  QPushButton* setGoalButton = new QPushButton("Goal", setCellGroupBox);
+  QObject::connect(
+      setGoalButton, &QPushButton::clicked, this, &EditTab::setGoalButtonClicked);
+  setCellButtonsLayout->addWidget(setEmptyButton, 0, 0);
+  setCellButtonsLayout->addWidget(setWallButton, 0, 1);
+  setCellButtonsLayout->addWidget(setStartButton, 1, 0);
+  setCellButtonsLayout->addWidget(setGoalButton, 1, 1);
+  setCellLayout->addLayout(setCellButtonsLayout);
+
+  // Create set cell cost section.
+  QHBoxLayout* setCellCostLayout = new QHBoxLayout();
+  QLabel* setCellCostLabel = new QLabel("Cost:", setCellGroupBox);
+  setCellCostSpinBox = new QSpinBox(setCellGroupBox);
+  setCellCostSpinBox->setMinimum(1);
+  setCellCostSpinBox->setMaximum(99);
+  setCellCostLayout->addWidget(setCellCostLabel);
+  setCellCostLayout->addWidget(setCellCostSpinBox);
+  setCellCostLayout->addStretch();
+  setCellLayout->addLayout(setCellCostLayout);
+
+  // Add set cell section to layout.
   layout->addWidget(setCellGroupBox);
 
   // Create the reset grid section.
@@ -47,3 +75,21 @@ EditTab::EditTab(QWidget* parent)
 }
 
 EditTab::~EditTab() { }
+
+/*
+ * Private slots.
+ */
+
+void EditTab::setEmptyButtonClicked()
+{
+  emit setCostSelectedCells(setCellCostSpinBox->value());
+}
+
+void EditTab::setWallButtonClicked()
+{
+  emit setCostSelectedCells(Grid::Cell::WALL_COST);
+}
+
+void EditTab::setStartButtonClicked() { emit setStartCellSelected(); }
+
+void EditTab::setGoalButtonClicked() { emit setGoalCellSelected(); }

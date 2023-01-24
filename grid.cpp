@@ -13,6 +13,8 @@ Grid::Grid(int width, int height)
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       grid[y * width + x] = std::make_shared<Cell>();
+      grid[y * width + x]->x = x;
+      grid[y * width + x]->y = y;
     }
   }
 }
