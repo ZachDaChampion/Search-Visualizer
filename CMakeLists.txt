@@ -19,8 +19,6 @@ set(PROJECT_SOURCES
         grid.cpp
         widgets/sim_params.cpp
         widgets/astar_tab.cpp
-        widgets/bfs_tab.cpp
-        widgets/dfs_tab.cpp
         widgets/dijkstra_tab.cpp
         widgets/edit_tab.cpp
         widgets/graphics_area.cpp

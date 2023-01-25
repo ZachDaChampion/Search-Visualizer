@@ -6,8 +6,6 @@
 #include <QWidget>
 
 #include "widgets/astar_tab.h"
-#include "widgets/bfs_tab.h"
-#include "widgets/dfs_tab.h"
 #include "widgets/dijkstra_tab.h"
 #include "widgets/edit_tab.h"
 #include "widgets/graphics_area.h"
@@ -47,8 +45,6 @@ class MainWindow : public QWidget {
    */
 
   EditTab* editTab; // The edit tab.
-  BFSTab* bfsTab; // The BFS tab.
-  DFSTab* dfsTab; // The DFS tab.
   AStarTab* astarTab; // The A* tab.
   DijkstraTab* dijkstraTab; // The Dijkstra tab.
 };

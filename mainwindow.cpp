@@ -14,15 +14,11 @@ MainWindow::MainWindow(QWidget* parent)
 
   // Create the tabs.
   editTab = new EditTab(this);
-  bfsTab = new BFSTab(this);
-  dfsTab = new DFSTab(this);
   astarTab = new AStarTab(this);
   dijkstraTab = new DijkstraTab(this);
 
   // Add the tabs to the tab widget.
   tabWidget->addTab(editTab, "Edit");
-  tabWidget->addTab(bfsTab, "BFS");
-  tabWidget->addTab(dfsTab, "DFS");
   tabWidget->addTab(astarTab, "A*");
   tabWidget->addTab(dijkstraTab, "Dijkstra");
 

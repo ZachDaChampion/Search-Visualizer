@@ -8,9 +8,9 @@ EditTab::EditTab(QWidget* parent)
     : QWidget(parent)
 {
   // Create the layouts.
-  auto layout = new QVBoxLayout(this);
-  editWidget = new QWidget(this);
-  auto editLayout = new QVBoxLayout(this);
+  auto layout = new QVBoxLayout;
+  editWidget = new QWidget;
+  auto editLayout = new QVBoxLayout;
   editWidget->setLayout(editLayout);
 
   // Create label for when a sim is running.
@@ -24,7 +24,7 @@ EditTab::EditTab(QWidget* parent)
   auto setCellLayout = new QVBoxLayout(setCellGroupBox);
 
   // Create set cell buttons section.
-  auto setCellButtonsLayout = new QGridLayout();
+  auto setCellButtonsLayout = new QGridLayout;
   auto setEmptyButton = new QPushButton("Normal", setCellGroupBox);
   connect(setEmptyButton, &QPushButton::clicked, this, &EditTab::setEmptyButtonClicked);
   QPushButton* setWallButton = new QPushButton("Wall", setCellGroupBox);
@@ -56,7 +56,7 @@ EditTab::EditTab(QWidget* parent)
   // Create the reset grid section.
   auto resetGridGroupBox = new QGroupBox("Reset Grid", this);
   auto resetGridLayout = new QVBoxLayout(resetGridGroupBox);
-  auto resetGridSizeLayout = new QHBoxLayout();
+  auto resetGridSizeLayout = new QHBoxLayout;
   resetGridWidthSpinBox = new QSpinBox(resetGridGroupBox);
   resetGridWidthSpinBox->setMinimum(2);
   resetGridWidthSpinBox->setMaximum(50);
@@ -83,7 +83,6 @@ EditTab::EditTab(QWidget* parent)
   layout->addWidget(noEditLabel);
   layout->addWidget(editWidget);
   layout->addStretch();
-  setLayout(layout);
 
   // Connect slots and signals
   GlobalState& globalState = GlobalState::singleton();
