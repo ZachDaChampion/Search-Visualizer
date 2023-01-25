@@ -381,34 +381,45 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     graphics->rect->setBrush(QBrush(Qt::black));
     graphics->text->setPlainText("");
     break;
+
   case Cell::VisualizationState::UNVISITED: {
+
     // Scale the color between green and red based on the cost.
+    // Color codes are mapped from [MIN_CELL_COST, MAX_CELL_COST to [75, 175].
+    // This allows start and goal cells to still be distinguishable.
+    // Red is used for high cost, green is used for low cost.
     float ratio = (float)(cell->cost - GlobalState::MIN_CELL_COST)
         / (float)(GlobalState::MAX_CELL_COST - GlobalState::MIN_CELL_COST);
     int red = 100 * ratio + 75;
     int green = 100 * (1.0 - ratio) + 75;
+
     graphics->rect->setBrush(QBrush(QColor(red, green, 0)));
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText(QString::number(cell->cost));
   } break;
+
   case Cell::VisualizationState::OPEN_LIST:
     graphics->rect->setBrush(QBrush(Qt::lightGray));
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText(QString::number(cell->cost));
     break;
+
   case Cell::VisualizationState::CLOSED_LIST:
     graphics->rect->setBrush(QBrush(Qt::darkGray));
     graphics->text->setDefaultTextColor(Qt::white);
     graphics->text->setPlainText(QString::number(cell->cost));
     break;
+
   case Cell::VisualizationState::START:
     graphics->rect->setBrush(QBrush(Qt::green));
     graphics->text->setPlainText("");
     break;
+
   case Cell::VisualizationState::GOAL:
     graphics->rect->setBrush(QBrush(Qt::red));
     graphics->text->setPlainText("");
     break;
+
   case Cell::VisualizationState::PATH:
     graphics->rect->setBrush(QBrush(Qt::white));
     graphics->text->setDefaultTextColor(Qt::black);
