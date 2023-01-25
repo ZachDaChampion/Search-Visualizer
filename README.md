@@ -1,7 +1,6 @@
 # Search-Visualizer
 
 # TODO
-- Enable grid resizing
 - Redo selection effect to use colored border
 - Make visualization use colored borders instead of recoloring entire cell
 - Remove BFS and DFS tabs
@@ -17,3 +16,4 @@
 - Remove unecessary private widgets from header files
 - Add iterative deepening
 - Clean up comments
+- Allow grid zoom and pan

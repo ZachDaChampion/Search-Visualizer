@@ -54,6 +54,15 @@ class GraphicsArea : public QGraphicsView {
    */
   void setGoalCellSelected();
 
+  /**
+   * Resize the grid.
+   * This will create a new grid and clear the existing one.
+   * 
+   * \param width The width of the grid.
+   * \param height The height of the grid.
+   */
+  void resetGrid(int width, int height);
+
   private slots:
   /**
    * Update editability based on simulation type.

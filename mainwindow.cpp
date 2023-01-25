@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+#include "global_state.h"
+
 MainWindow::MainWindow(QWidget* parent)
     : QWidget(parent)
 {
@@ -35,7 +37,7 @@ MainWindow::MainWindow(QWidget* parent)
   setLayout(layout);
 
   // Init graphics area.
-  graphicsArea->initGrid(10, 10);
+  graphicsArea->initGrid(GlobalState::GRID_WIDTH, GlobalState::GRID_HEIGHT);
   graphicsArea->drawGrid();
 
   // Connect signals and slots.
@@ -45,6 +47,8 @@ MainWindow::MainWindow(QWidget* parent)
       &GraphicsArea::setStartCellSelected);
   QObject::connect(editTab, &EditTab::setGoalCellSelected, graphicsArea,
       &GraphicsArea::setGoalCellSelected);
+  QObject::connect(
+      editTab, &EditTab::resetGrid, graphicsArea, &GraphicsArea::resetGrid);
 }
 
 MainWindow::~MainWindow() { }

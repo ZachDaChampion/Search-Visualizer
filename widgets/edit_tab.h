@@ -37,6 +37,11 @@ class EditTab : public QWidget {
   void setGoalButtonClicked();
 
   /**
+   * "Reset grid" button clicked.
+   */
+  void resetGridButtonClicked();
+
+  /**
    * Update widget visibility based on simulation type.
    * If there is no current simulation, edit controls will be show.
    * Otherwise they will be hidden.
@@ -74,6 +79,14 @@ class EditTab : public QWidget {
    * Signal that the selected cells should be set as the goal cell.
    */
   void setGoalCellSelected();
+
+  /**
+   * Signal that the grid should be reset.
+   * 
+   * \param width Width of the grid.
+   * \param height Height of the grid.
+   */
+  void resetGrid(int width, int height);
 
   private:
 

@@ -118,6 +118,19 @@ void GraphicsArea::setGoalCellSelected()
   goalCell = cell;
 }
 
+void GraphicsArea::resetGrid(int width, int height)
+{
+  // Initialize the grid.
+  initGrid(width, height);
+
+  // Update the graphics.
+  drawGrid();
+
+  // Update the graphics area size.
+  graphicsScene->setSceneRect(0, 0, width * cellDisplaySize, height * cellDisplaySize);
+  resizeEvent(nullptr);
+}
+
 void GraphicsArea::initGrid(int width, int height)
 {
   // Delete the old graphics items.
@@ -229,7 +242,7 @@ void GraphicsArea::resizeEvent(QResizeEvent* event)
 
 void GraphicsArea::showEvent(QShowEvent* event)
 {
-  fitInView(graphicsScene->sceneRect(), Qt::KeepAspectRatio);
+  resizeEvent(nullptr);
 }
 
 /*

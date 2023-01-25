@@ -26,17 +26,13 @@ EditTab::EditTab(QWidget* parent)
   // Create set cell buttons section.
   auto setCellButtonsLayout = new QGridLayout();
   auto setEmptyButton = new QPushButton("Normal", setCellGroupBox);
-  QObject::connect(
-      setEmptyButton, &QPushButton::clicked, this, &EditTab::setEmptyButtonClicked);
+  connect(setEmptyButton, &QPushButton::clicked, this, &EditTab::setEmptyButtonClicked);
   QPushButton* setWallButton = new QPushButton("Wall", setCellGroupBox);
-  QObject::connect(
-      setWallButton, &QPushButton::clicked, this, &EditTab::setWallButtonClicked);
+  connect(setWallButton, &QPushButton::clicked, this, &EditTab::setWallButtonClicked);
   QPushButton* setStartButton = new QPushButton("Start", setCellGroupBox);
-  QObject::connect(
-      setStartButton, &QPushButton::clicked, this, &EditTab::setStartButtonClicked);
+  connect(setStartButton, &QPushButton::clicked, this, &EditTab::setStartButtonClicked);
   QPushButton* setGoalButton = new QPushButton("Goal", setCellGroupBox);
-  QObject::connect(
-      setGoalButton, &QPushButton::clicked, this, &EditTab::setGoalButtonClicked);
+  connect(setGoalButton, &QPushButton::clicked, this, &EditTab::setGoalButtonClicked);
   setCellButtonsLayout->addWidget(setEmptyButton, 0, 0);
   setCellButtonsLayout->addWidget(setWallButton, 0, 1);
   setCellButtonsLayout->addWidget(setStartButton, 1, 0);
@@ -62,12 +58,14 @@ EditTab::EditTab(QWidget* parent)
   auto resetGridLayout = new QVBoxLayout(resetGridGroupBox);
   auto resetGridSizeLayout = new QHBoxLayout();
   resetGridWidthSpinBox = new QSpinBox(resetGridGroupBox);
-  resetGridWidthSpinBox->setMinimum(1);
-  resetGridWidthSpinBox->setMaximum(100);
+  resetGridWidthSpinBox->setMinimum(2);
+  resetGridWidthSpinBox->setMaximum(50);
+  resetGridWidthSpinBox->setValue(GlobalState::GRID_WIDTH);
   auto resetGridSizeLabelX = new QLabel("x", resetGridGroupBox);
   resetGridHeightSpinBox = new QSpinBox(resetGridGroupBox);
-  resetGridHeightSpinBox->setMinimum(1);
-  resetGridHeightSpinBox->setMaximum(100);
+  resetGridHeightSpinBox->setMinimum(2);
+  resetGridHeightSpinBox->setMaximum(50);
+  resetGridHeightSpinBox->setValue(GlobalState::GRID_HEIGHT);
   auto resetGridSizeLabel = new QLabel("cells", resetGridGroupBox);
   resetGridSizeLayout->addWidget(resetGridWidthSpinBox);
   resetGridSizeLayout->addWidget(resetGridSizeLabelX);
@@ -78,6 +76,8 @@ EditTab::EditTab(QWidget* parent)
   resetGridButton = new QPushButton("Reset Grid", resetGridGroupBox);
   resetGridLayout->addWidget(resetGridButton);
   editLayout->addWidget(resetGridGroupBox);
+  connect(
+      resetGridButton, &QPushButton::clicked, this, &EditTab::resetGridButtonClicked);
 
   // Set the layout.
   layout->addWidget(noEditLabel);
@@ -124,3 +124,8 @@ void EditTab::setWallButtonClicked()
 void EditTab::setStartButtonClicked() { emit setStartCellSelected(); }
 
 void EditTab::setGoalButtonClicked() { emit setGoalCellSelected(); }
+
+void EditTab::resetGridButtonClicked()
+{
+  emit resetGrid(resetGridWidthSpinBox->value(), resetGridHeightSpinBox->value());
+}
