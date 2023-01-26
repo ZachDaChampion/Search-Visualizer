@@ -202,9 +202,13 @@ void GraphicsArea::drawGrid()
       item.highlight->setZValue(1);
       item.highlight->hide();
 
-      // Setup text.
+      // Setup cost text.
       item.text = new QGraphicsTextItem(item.rect);
       item.text->setZValue(3);
+
+      // Setup name.
+      item.name = new QGraphicsTextItem(item.rect);
+      item.name->setZValue(3);
 
       // Update the graphics of the cell.
       updateCellGraphics(grid->getCell(x, y).get(), &item);
@@ -439,14 +443,17 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
 
   if (cell->vis == Cell::VisualizationState::WALL) {
     graphics->rect->setBrush(QBrush(Qt::black));
+    graphics->name->setDefaultTextColor(Qt::white);
     graphics->text->setDefaultTextColor(Qt::white);
     graphics->text->setPlainText("W");
   } else if (cell->vis == Cell::VisualizationState::START) {
     graphics->rect->setBrush(QBrush(Qt::green));
+    graphics->name->setDefaultTextColor(Qt::black);
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText("S");
   } else if (cell->vis == Cell::VisualizationState::GOAL) {
     graphics->rect->setBrush(QBrush(Qt::red));
+    graphics->name->setDefaultTextColor(Qt::black);
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText("G");
   } else {
@@ -461,6 +468,7 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     int green = 100 * (1.0 - ratio) + 75;
 
     graphics->rect->setBrush(QBrush(QColor(red, green, 0)));
+    graphics->name->setDefaultTextColor(Qt::black);
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText(QString::number(cell->cost));
   }
@@ -507,11 +515,24 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     }
   }
 
-  // Center the text in the cell.
+  // Set font size.
+  QFont font = graphics->text->font();
+  font.setPointSize(cellDisplaySize / 4);
+  graphics->text->setFont(font);
+
+  // Center the cost text in the cell.
   QRectF cellBounds = graphics->rect->boundingRect();
   int x = cellBounds.x();
   int y = cellBounds.y();
   QRectF rect = graphics->text->boundingRect();
   graphics->text->setPos(x + (cellDisplaySize - rect.width()) / 2,
       y + (cellDisplaySize - rect.height()) / 2);
+
+  // Set cell name.
+  font.setPointSize(cellDisplaySize / 5);
+  graphics->name->setPlainText(QString::fromStdString(cell->name));
+  graphics->name->setFont(font);
+
+  // Put cell name in top left corner.
+  graphics->name->setPos(x - 1, y - 2);
 }

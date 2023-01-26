@@ -171,6 +171,10 @@ class GraphicsArea : public QGraphicsView {
     QGraphicsRectItem* rect = nullptr; // The rectangle representing the cell.
     QGraphicsRectItem* highlight = nullptr; // The rectangle representing the highlight.
     QGraphicsTextItem* text = nullptr; // The text to display inside the cell.
+    QGraphicsTextItem* name = nullptr; // The text to display the name of the cell.
+    QGraphicsTextItem* g = nullptr; // The text to display the g value of the cell.
+    QGraphicsTextItem* h = nullptr; // The text to display the h value of the cell.
+    QGraphicsTextItem* f = nullptr; // The text to display the f value of the cell.
   };
 
   CellGraphicsItem* cellGraphicsItems

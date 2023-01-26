@@ -2,6 +2,7 @@
 #define GRID_H
 
 #include <memory>
+#include <string>
 
 /**
  * A grid of cells.
@@ -38,6 +39,7 @@ class Grid {
     void* searchData = nullptr; // The search data associated with the cell.
     VisualizationState vis
         = VisualizationState::UNVISITED; // The visualization state of the cell.
+    std::string name = ""; // The name of the cell.
   };
 
   /**
