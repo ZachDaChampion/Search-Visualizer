@@ -83,6 +83,7 @@ EditTab::EditTab(QWidget* parent)
   layout->addWidget(noEditLabel);
   layout->addWidget(editWidget);
   layout->addStretch();
+  setLayout(layout);
 
   // Connect slots and signals
   GlobalState& globalState = GlobalState::singleton();

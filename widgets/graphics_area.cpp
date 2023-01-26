@@ -174,6 +174,11 @@ void GraphicsArea::drawGrid()
   pen.setWidth(2);
   pen.setCosmetic(true);
 
+  // Create pen for highlighting.
+  constexpr int bw = GlobalState::CELL_BORDER_WIDTH;
+  QPen highlightPen(Qt::yellow);
+  highlightPen.setWidth(bw);
+
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
 
@@ -186,6 +191,15 @@ void GraphicsArea::drawGrid()
       item.rect->setPen(pen);
       item.rect->setBrush(QBrush(Qt::white));
       item.rect->setZValue(0);
+
+      // Setup highlight.
+      item.highlight = new QGraphicsRectItem(x * cellDisplaySize + bw / 2,
+          y * cellDisplaySize + bw / 2, cellDisplaySize - bw, cellDisplaySize - bw,
+          item.rect);
+      item.highlight->setPen(highlightPen);
+      item.highlight->setBrush(Qt::NoBrush);
+      item.highlight->setZValue(1);
+      item.highlight->hide();
 
       // Setup text.
       item.text = new QGraphicsTextItem(item.rect);
@@ -240,10 +254,7 @@ void GraphicsArea::resizeEvent(QResizeEvent* event)
   fitInView(graphicsScene->sceneRect(), Qt::KeepAspectRatio);
 }
 
-void GraphicsArea::showEvent(QShowEvent* event)
-{
-  resizeEvent(nullptr);
-}
+void GraphicsArea::showEvent(QShowEvent* event) { resizeEvent(nullptr); }
 
 /*
  * Mouse event handlers.
@@ -440,16 +451,15 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     break;
   }
 
-  // If the cell is selected, add a yellow color effect.
+  // If the cell is selected, show a yellow border around it.
   if (cell->selected) {
-    QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect;
-    effect->setColor(Qt::yellow);
-    effect->setStrength(0.5);
-    graphics->rect->setGraphicsEffect(effect);
-    graphics->rect->setZValue(1);
+    constexpr int bw = GlobalState::CELL_BORDER_WIDTH;
+    QPen highlightPen(Qt::yellow);
+    highlightPen.setWidth(bw);
+    graphics->highlight->setPen(highlightPen);
+    graphics->highlight->show();
   } else {
-    graphics->rect->setGraphicsEffect(nullptr);
-    graphics->rect->setZValue(0);
+    graphics->highlight->hide();
   }
 
   // Center the text in the cell.

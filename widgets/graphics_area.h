@@ -57,7 +57,7 @@ class GraphicsArea : public QGraphicsView {
   /**
    * Resize the grid.
    * This will create a new grid and clear the existing one.
-   * 
+   *
    * \param width The width of the grid.
    * \param height The height of the grid.
    */
@@ -169,6 +169,7 @@ class GraphicsArea : public QGraphicsView {
 
   struct CellGraphicsItem {
     QGraphicsRectItem* rect = nullptr; // The rectangle representing the cell.
+    QGraphicsRectItem* highlight = nullptr; // The rectangle representing the highlight.
     QGraphicsTextItem* text = nullptr; // The text to display inside the cell.
   };
 

@@ -1,8 +1,6 @@
 # Search-Visualizer
 
 # TODO
-- Add colored borders to cells
-- Redo selection effect to use colored border
 - Make visualization use colored borders instead of recoloring entire cell
 - Add A* info and cell IDs to grid
 - Add search update loop
