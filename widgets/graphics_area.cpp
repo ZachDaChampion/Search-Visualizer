@@ -15,6 +15,7 @@ GraphicsArea::GraphicsArea(int minWidth, int minHeight, QWidget* parent)
   setMinimumSize(minWidth, minHeight);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setRenderHint(QPainter::Antialiasing);
   graphicsScene = new QGraphicsScene(this);
   setScene(graphicsScene);
 
@@ -369,6 +370,33 @@ void GraphicsArea::keyPressEvent(QKeyEvent* event)
   }
 
   /*
+   * The 'W' key should set the cell type of all selected cells to WALL.
+   */
+
+  if (key == Qt::Key_W) {
+    setCostSelectedCells(Cell::WALL_COST);
+    return;
+  }
+
+  /*
+   * The 'S' key should set the cell type of all selected cells to START.
+   */
+
+  if (key == Qt::Key_S) {
+    setStartCellSelected();
+    return;
+  }
+
+  /*
+   * The 'G' key should set the cell type of all selected cells to GOAL.
+   */
+
+  if (key == Qt::Key_G) {
+    setGoalCellSelected();
+    return;
+  }
+
+  /*
    * The number keys 1-9 should set the cell cost of all selected cells.
    */
 
@@ -378,8 +406,8 @@ void GraphicsArea::keyPressEvent(QKeyEvent* event)
   }
 
   // Calculate an offset from the 0 key.
-  // If this offset is between 1 and 9, it is the numeric equivalent of the key that was
-  // pressed. For instance, if Qt::Key_5 is pressed, offset will be 5.
+  // If this offset is between 1 and 9, it is the numeric equivalent of the key that
+  // was pressed. For instance, if Qt::Key_5 is pressed, offset will be 5.
   int offset = key - Qt::Key_0;
   if (offset > 9) { // We already know that offset is at least 1.
     return;
@@ -387,7 +415,12 @@ void GraphicsArea::keyPressEvent(QKeyEvent* event)
 
   // Update all selected cells with new cost.
   for (std::shared_ptr<Cell> cell : selected) {
-    cell->cost = offset;
+    if (cell == startCell || cell == goalCell) {
+      continue;
+    } else {
+      cell->cost = offset;
+      cell->vis = Cell::VisualizationState::UNVISITED;
+    }
     updateCellGraphics(
         cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
   }
@@ -399,14 +432,30 @@ void GraphicsArea::keyPressEvent(QKeyEvent* event)
 
 void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
 {
-  // Update the graphics of the cell based on its visualization state.
-  switch (cell->vis) {
-  case Cell::VisualizationState::WALL:
-    graphics->rect->setBrush(QBrush(Qt::black));
-    graphics->text->setPlainText("");
-    break;
+  // Set highlight pen.
+  constexpr int bw = GlobalState::CELL_BORDER_WIDTH;
+  QPen highlightPen(Qt::yellow);
+  highlightPen.setWidth(bw);
 
-  case Cell::VisualizationState::UNVISITED: {
+  /*
+   * Set the color of the cell.
+   * Walls should be black, start and goal cells should be green and red, and
+   * other cells should be scaled between green and red based on the cost.
+   */
+
+  if (cell->vis == Cell::VisualizationState::WALL) {
+    graphics->rect->setBrush(QBrush(Qt::black));
+    graphics->text->setDefaultTextColor(Qt::white);
+    graphics->text->setPlainText("W");
+  } else if (cell->vis == Cell::VisualizationState::START) {
+    graphics->rect->setBrush(QBrush(Qt::green));
+    graphics->text->setDefaultTextColor(Qt::black);
+    graphics->text->setPlainText("S");
+  } else if (cell->vis == Cell::VisualizationState::GOAL) {
+    graphics->rect->setBrush(QBrush(Qt::red));
+    graphics->text->setDefaultTextColor(Qt::black);
+    graphics->text->setPlainText("G");
+  } else {
 
     // Scale the color between green and red based on the cost.
     // Color codes are mapped from [MIN_CELL_COST, MAX_CELL_COST to [75, 175].
@@ -420,46 +469,48 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     graphics->rect->setBrush(QBrush(QColor(red, green, 0)));
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText(QString::number(cell->cost));
-  } break;
-
-  case Cell::VisualizationState::OPEN_LIST:
-    graphics->rect->setBrush(QBrush(Qt::lightGray));
-    graphics->text->setDefaultTextColor(Qt::black);
-    graphics->text->setPlainText(QString::number(cell->cost));
-    break;
-
-  case Cell::VisualizationState::CLOSED_LIST:
-    graphics->rect->setBrush(QBrush(Qt::darkGray));
-    graphics->text->setDefaultTextColor(Qt::white);
-    graphics->text->setPlainText(QString::number(cell->cost));
-    break;
-
-  case Cell::VisualizationState::START:
-    graphics->rect->setBrush(QBrush(Qt::green));
-    graphics->text->setPlainText("");
-    break;
-
-  case Cell::VisualizationState::GOAL:
-    graphics->rect->setBrush(QBrush(Qt::red));
-    graphics->text->setPlainText("");
-    break;
-
-  case Cell::VisualizationState::PATH:
-    graphics->rect->setBrush(QBrush(Qt::white));
-    graphics->text->setDefaultTextColor(Qt::black);
-    graphics->text->setPlainText(QString::number(cell->cost));
-    break;
   }
 
-  // If the cell is selected, show a yellow border around it.
-  if (cell->selected) {
-    constexpr int bw = GlobalState::CELL_BORDER_WIDTH;
-    QPen highlightPen(Qt::yellow);
-    highlightPen.setWidth(bw);
-    graphics->highlight->setPen(highlightPen);
-    graphics->highlight->show();
+  /*
+   * In edit mode, we want to highlight the cell in yellow if it is selected.
+   * Otherwise, we want to highlight the cell based on its visualization state.
+   */
+
+  if (editMode) {
+    if (cell->selected) {
+      graphics->highlight->setPen(highlightPen);
+      graphics->highlight->show();
+    } else {
+      graphics->highlight->hide();
+    }
   } else {
-    graphics->highlight->hide();
+    switch (cell->vis) {
+    case Cell::VisualizationState::WALL:
+      graphics->highlight->hide();
+      break;
+
+    case Cell::VisualizationState::UNVISITED:
+      graphics->highlight->hide();
+      break;
+
+    case Cell::VisualizationState::OPEN_LIST:
+      highlightPen.setColor(Qt::blue);
+      graphics->highlight->setPen(highlightPen);
+      graphics->highlight->show();
+      break;
+
+    case Cell::VisualizationState::CLOSED_LIST:
+      highlightPen.setColor(Qt::red);
+      graphics->highlight->setPen(highlightPen);
+      graphics->highlight->show();
+      break;
+
+    case Cell::VisualizationState::PATH:
+      highlightPen.setColor(Qt::green);
+      graphics->highlight->setPen(highlightPen);
+      graphics->highlight->show();
+      break;
+    }
   }
 
   // Center the text in the cell.

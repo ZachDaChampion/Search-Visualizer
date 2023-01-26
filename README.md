@@ -1,7 +1,6 @@
 # Search-Visualizer
 
 # TODO
-- Make visualization use colored borders instead of recoloring entire cell
 - Add A* info and cell IDs to grid
 - Add search update loop
 - Implement Dijkstra
