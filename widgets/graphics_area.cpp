@@ -221,22 +221,16 @@ void GraphicsArea::drawGrid()
 
 void GraphicsArea::simTypeSlot(GlobalState::SimType type)
 {
+  // Enable/disable editing mode.
+  editMode = (type == GlobalState::SimType::NONE);
 
-  /*
-   * If no sim is running, simply set the editMode flag.
-   * If a sim is running, unset the editMode flag and clear the current selection.
-   */
-
-  if (type == GlobalState::SimType::NONE) {
-    editMode = true;
-  } else {
-    editMode = false;
-    for (std::shared_ptr<Cell> cell : selected) {
-      cell->selected = false;
-      updateCellGraphics(
-          cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+  // Loop endtire grid and update graphics.
+  for (int x = 0; x < grid->getWidth(); ++x) {
+    for (int y = 0; y < grid->getHeight(); ++y) {
+      auto cell = grid->getCell(x, y);
+      cell->selected = false; // Deselect all cells.
+      updateCellGraphics(cell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
     }
-    selected.clear();
   }
 }
 
