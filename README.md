@@ -1,8 +1,6 @@
 # Search-Visualizer
 
 # TODO
-- Add A* info and cell IDs to grid
-- Add search update loop
 - Implement Dijkstra
 - Implement A*
 - Implement IDA* (iterative deepening A*)

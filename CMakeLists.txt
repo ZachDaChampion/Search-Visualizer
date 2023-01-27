@@ -16,6 +16,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
         global_state.cpp
+        game_loop.cpp
         grid.cpp
         widgets/sim_params.cpp
         widgets/astar_tab.cpp

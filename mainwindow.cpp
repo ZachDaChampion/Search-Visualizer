@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 
+#include "game_loop.h"
 #include "global_state.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -45,6 +46,9 @@ MainWindow::MainWindow(QWidget* parent)
       &GraphicsArea::setGoalCellSelected);
   QObject::connect(
       editTab, &EditTab::resetGrid, graphicsArea, &GraphicsArea::resetGrid);
+
+  // Make sure game loop is initialized.
+  GameLoop::singleton();
 }
 
 MainWindow::~MainWindow() { }
