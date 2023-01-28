@@ -221,6 +221,14 @@ void GraphicsArea::drawGrid()
       item.name = new QGraphicsTextItem(item.rect);
       item.name->setZValue(3);
 
+      // Setup corner text.
+      item.text_tr = new QGraphicsTextItem(item.rect);
+      item.text_tr->setZValue(3);
+      item.text_bl = new QGraphicsTextItem(item.rect);
+      item.text_bl->setZValue(3);
+      item.text_br = new QGraphicsTextItem(item.rect);
+      item.text_br->setZValue(3);
+
       // Update the graphics of the cell.
       updateCellGraphics(grid->getCell(x, y).get(), &item);
 
@@ -244,6 +252,11 @@ void GraphicsArea::simTypeSlot(GlobalState::SimType type)
     for (int y = 0; y < grid->getHeight(); ++y) {
       auto cell = grid->getCell(x, y);
       cell->selected = false; // Deselect all cells.
+
+      // Clear corner text.
+      cell->text_tr = "";
+      cell->text_bl = "";
+      cell->text_br = "";
 
       // Clear path and list visualization.
       switch (cell->vis) {
@@ -481,16 +494,25 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
   if (cell->vis == Cell::VisualizationState::WALL) {
     graphics->rect->setBrush(QBrush(Qt::black));
     graphics->name->setDefaultTextColor(Qt::white);
+    graphics->text_tr->setDefaultTextColor(Qt::white);
+    graphics->text_bl->setDefaultTextColor(Qt::white);
+    graphics->text_br->setDefaultTextColor(Qt::white);
     graphics->text->setDefaultTextColor(Qt::white);
     graphics->text->setPlainText("W");
   } else if (cell->vis == Cell::VisualizationState::START) {
     graphics->rect->setBrush(QBrush(Qt::green));
     graphics->name->setDefaultTextColor(Qt::black);
+    graphics->text_tr->setDefaultTextColor(Qt::black);
+    graphics->text_bl->setDefaultTextColor(Qt::black);
+    graphics->text_br->setDefaultTextColor(Qt::black);
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText("S");
   } else if (cell->vis == Cell::VisualizationState::GOAL) {
     graphics->rect->setBrush(QBrush(Qt::magenta));
     graphics->name->setDefaultTextColor(Qt::black);
+    graphics->text_tr->setDefaultTextColor(Qt::black);
+    graphics->text_bl->setDefaultTextColor(Qt::black);
+    graphics->text_br->setDefaultTextColor(Qt::black);
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText("G");
   } else {
@@ -506,6 +528,9 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
 
     graphics->rect->setBrush(QBrush(QColor(red, green, 0)));
     graphics->name->setDefaultTextColor(Qt::black);
+    graphics->text_tr->setDefaultTextColor(Qt::black);
+    graphics->text_bl->setDefaultTextColor(Qt::black);
+    graphics->text_br->setDefaultTextColor(Qt::black);
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText(QString::number(cell->cost));
   }
@@ -570,6 +595,28 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
   graphics->name->setPlainText(QString::fromStdString(cell->name));
   graphics->name->setFont(font);
 
+  // Set cell corner text.
+  std::cout << "Setting corner text: " << cell->text_tr << std::endl;
+  graphics->text_tr->setPlainText(QString::fromStdString(cell->text_tr));
+  graphics->text_tr->setFont(font);
+  graphics->text_bl->setPlainText(QString::fromStdString(cell->text_bl));
+  graphics->text_bl->setFont(font);
+  graphics->text_br->setPlainText(QString::fromStdString(cell->text_br));
+  graphics->text_br->setFont(font);
+
   // Put cell name in top left corner.
   graphics->name->setPos(x - 1, y - 2);
+
+  // Top right text.
+  QRectF rect_tr = graphics->text_tr->boundingRect();
+  graphics->text_tr->setPos(x + cellDisplaySize - rect_tr.width() + 3, y - 2);
+
+  // Bottom left text.
+  QRectF rect_bl = graphics->text_bl->boundingRect();
+  graphics->text_bl->setPos(x - 1, y + cellDisplaySize - rect_bl.height() - 2);
+
+  // Bottom right text.
+  QRectF rect_br = graphics->text_br->boundingRect();
+  graphics->text_br->setPos(x + cellDisplaySize - rect_br.width() - 1,
+      y + cellDisplaySize - rect_br.height() - 2);
 }

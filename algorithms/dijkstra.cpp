@@ -146,6 +146,7 @@ std::vector<std::shared_ptr<Grid::Cell>> Dijkstra::step()
         continue;
       }
 
+      neighbor->text_tr = std::to_string(newCost);
       neighborSD->cost = newCost;
       neighborSD->parent = cell;
       neighbor->searchData = neighborSD;
@@ -164,6 +165,7 @@ std::vector<std::shared_ptr<Grid::Cell>> Dijkstra::step()
     // Neighbor is in the open list and has a higher cost.
     else if (newCost < searchData->cost) {
       // Update the cost of the neighbor.
+      neighbor->text_tr = std::to_string(newCost);
       neighborSD->cost = newCost;
       neighborSD->parent = cell;
       updatedCells.push_back(neighbor);

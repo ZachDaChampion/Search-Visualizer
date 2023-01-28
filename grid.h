@@ -41,6 +41,9 @@ class Grid {
     VisualizationState vis
         = VisualizationState::UNVISITED; // The visualization state of the cell.
     std::string name = ""; // The name of the cell.
+    std::string text_tr = ""; // The text in the top right of the cell.
+    std::string text_bl = ""; // The text in the bottom left of the cell.
+    std::string text_br = ""; // The text in the bottom right of the cell.
   };
 
   /**
