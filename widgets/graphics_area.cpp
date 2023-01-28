@@ -1,4 +1,5 @@
 #include "graphics_area.h"
+#include "../algorithms/astar.h"
 #include "../algorithms/dijkstra.h"
 #include "../game_loop.h"
 #include "../global_state.h"
@@ -282,6 +283,10 @@ void GraphicsArea::simTypeSlot(GlobalState::SimType type)
   case GlobalState::SimType::DIJKSTRA:
     gameLoop.setSim(
         std::make_shared<SearchAlgorithms::Dijkstra>(grid, startCell, goalCell));
+    break;
+  case GlobalState::SimType::ASTAR:
+    gameLoop.setSim(
+        std::make_shared<SearchAlgorithms::AStar>(grid, startCell, goalCell));
     break;
   default:
     break;
@@ -612,10 +617,10 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
 
   // Bottom left text.
   QRectF rect_bl = graphics->text_bl->boundingRect();
-  graphics->text_bl->setPos(x - 1, y + cellDisplaySize - rect_bl.height() - 2);
+  graphics->text_bl->setPos(x - 1, y + cellDisplaySize - rect_bl.height() + 3);
 
   // Bottom right text.
   QRectF rect_br = graphics->text_br->boundingRect();
-  graphics->text_br->setPos(x + cellDisplaySize - rect_br.width() - 1,
-      y + cellDisplaySize - rect_br.height() - 2);
+  graphics->text_br->setPos(x + cellDisplaySize - rect_br.width() + 3,
+      y + cellDisplaySize - rect_br.height() + 3);
 }

@@ -30,7 +30,8 @@ class GlobalState : public QObject {
   static constexpr int MAX_CELL_COST = 9; // The maximum cost of a cell.
   static constexpr int GRID_WIDTH = 10; // The width of the grid.
   static constexpr int GRID_HEIGHT = 10; // The height of the grid.
-  static constexpr int CELL_BORDER_WIDTH = 1; // The width of the border around a cell.
+  static constexpr float CELL_BORDER_WIDTH
+      = 1.5; // The width of the border around a cell.
 
   signals:
 

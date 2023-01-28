@@ -1,7 +1,6 @@
 # Search-Visualizer
 
 # TODO
-- Implement A*
 - Implement IDA* (iterative deepening A*)
 - Implement Recursive Best First Search
 - Implement SMA* (simple memory-bounded A*)
