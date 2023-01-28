@@ -596,7 +596,6 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
   graphics->name->setFont(font);
 
   // Set cell corner text.
-  std::cout << "Setting corner text: " << cell->text_tr << std::endl;
   graphics->text_tr->setPlainText(QString::fromStdString(cell->text_tr));
   graphics->text_tr->setFont(font);
   graphics->text_bl->setPlainText(QString::fromStdString(cell->text_bl));
