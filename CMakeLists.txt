@@ -18,6 +18,7 @@ set(PROJECT_SOURCES
         global_state.cpp
         game_loop.cpp
         grid.cpp
+        algorithms/dijkstra.cpp
         widgets/sim_params.cpp
         widgets/astar_tab.cpp
         widgets/dijkstra_tab.cpp

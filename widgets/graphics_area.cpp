@@ -1,4 +1,6 @@
 #include "graphics_area.h"
+#include "../algorithms/dijkstra.h"
+#include "../game_loop.h"
 #include "../global_state.h"
 #include "edit_tab.h"
 
@@ -21,7 +23,9 @@ GraphicsArea::GraphicsArea(int minWidth, int minHeight, QWidget* parent)
 
   // Connect signals and slots.
   GlobalState& globalState = GlobalState::singleton();
+  GameLoop& gameLoop = GameLoop::singleton();
   connect(&globalState, &GlobalState::simTypeChanged, this, &GraphicsArea::simTypeSlot);
+  connect(&gameLoop, &GameLoop::updateGraphics, this, &GraphicsArea::updateCells);
 }
 
 GraphicsArea::~GraphicsArea() { }
@@ -30,7 +34,14 @@ GraphicsArea::~GraphicsArea() { }
  * Public slots.
  */
 
-void GraphicsArea::updateCells() { }
+void GraphicsArea::updateCells(std::vector<std::shared_ptr<Grid::Cell>> cells)
+{
+  // Update the cells.
+  for (auto& cell : cells) {
+    updateCellGraphics(
+        cell.get(), &cellGraphicsItems[cell->y * grid->getWidth() + cell->x]);
+  }
+}
 
 void GraphicsArea::updateInteractionMode(bool editMode) { this->editMode = editMode; }
 
@@ -233,8 +244,34 @@ void GraphicsArea::simTypeSlot(GlobalState::SimType type)
     for (int y = 0; y < grid->getHeight(); ++y) {
       auto cell = grid->getCell(x, y);
       cell->selected = false; // Deselect all cells.
+
+      // Clear path and list visualization.
+      switch (cell->vis) {
+      case Cell::VisualizationState::PATH:
+      case Cell::VisualizationState::OPEN_LIST:
+      case Cell::VisualizationState::CLOSED_LIST:
+        cell->vis = Cell::VisualizationState::UNVISITED;
+      default:
+        break;
+      }
+
       updateCellGraphics(cell.get(), &cellGraphicsItems[y * grid->getWidth() + x]);
     }
+  }
+
+  // Create search algorithm.
+  GameLoop& gameLoop = GameLoop::singleton();
+
+  switch (type) {
+  case GlobalState::SimType::NONE:
+    gameLoop.setSim(nullptr);
+    break;
+  case GlobalState::SimType::DIJKSTRA:
+    gameLoop.setSim(
+        std::make_shared<SearchAlgorithms::Dijkstra>(grid, startCell, goalCell));
+    break;
+  default:
+    break;
   }
 }
 
@@ -452,7 +489,7 @@ void GraphicsArea::updateCellGraphics(Cell* cell, CellGraphicsItem* graphics)
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText("S");
   } else if (cell->vis == Cell::VisualizationState::GOAL) {
-    graphics->rect->setBrush(QBrush(Qt::red));
+    graphics->rect->setBrush(QBrush(Qt::magenta));
     graphics->name->setDefaultTextColor(Qt::black);
     graphics->text->setDefaultTextColor(Qt::black);
     graphics->text->setPlainText("G");

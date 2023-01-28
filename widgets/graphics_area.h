@@ -25,8 +25,10 @@ class GraphicsArea : public QGraphicsView {
 
   /**
    * Update the existing cells in the grid.
+   * 
+   * \param cells The cells to update.
    */
-  void updateCells();
+  void updateCells(std::vector<std::shared_ptr<Grid::Cell>> cells);
 
   /**
    * Update the current interaction mode.
@@ -161,6 +163,14 @@ class GraphicsArea : public QGraphicsView {
    */
   void keyPressEvent(QKeyEvent* event) override;
 
+  /*
+   * Data.
+   */
+
+  std::shared_ptr<Grid> grid = nullptr; // The grid.
+  std::shared_ptr<Grid::Cell> startCell = nullptr; // The start cell.
+  std::shared_ptr<Grid::Cell> goalCell = nullptr; // The goal cell.
+
   private:
 
   /*
@@ -194,14 +204,10 @@ class GraphicsArea : public QGraphicsView {
    * Data.
    */
 
-  std::shared_ptr<Grid> grid = nullptr; // The grid.
   int cellDisplaySize = 24; // The size of each cell in the grid (in pixels).
 
   bool editMode = true; // True if the edit mode is active, false otherwise.
   std::set<std::shared_ptr<Grid::Cell>> selected; // The selected cells.
-
-  std::shared_ptr<Grid::Cell> startCell = nullptr; // The start cell.
-  std::shared_ptr<Grid::Cell> goalCell = nullptr; // The goal cell.
 
   /*
    * Widgets.

@@ -22,8 +22,6 @@ class GlobalState : public QObject {
    */
   enum class SimType {
     NONE, // No simulation type.
-    BFS, // Breadth-first search.
-    DFS, // Depth-first search.
     DIJKSTRA, // Dijkstra's algorithm.
     ASTAR // A* algorithm.
   };

@@ -2,6 +2,7 @@
 #define GRID_H
 
 #include <memory>
+#include <vector>
 #include <string>
 
 /**
@@ -77,6 +78,15 @@ class Grid {
    * \return The cell at the given coordinates.
    */
   std::shared_ptr<Cell> getCell(int x, int y) const;
+
+  /**
+   * Get the neighbors of a cell.
+   * The neighbors are the cells that are adjacent to the given cell.
+   *
+   * \param cell The cell to get the neighbors of.
+   * \return A vector of the neighbors of the given cell.
+   */
+  std::vector<std::shared_ptr<Cell>> getNeighbors(std::shared_ptr<Cell> cell) const;
 
   /*
    * Data.

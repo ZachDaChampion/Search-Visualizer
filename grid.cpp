@@ -57,3 +57,30 @@ std::shared_ptr<Grid::Cell> Grid::getCell(int x, int y) const
   // Return the cell.
   return grid[y * width + x];
 }
+
+std::vector<std::shared_ptr<Grid::Cell>> Grid::getNeighbors(
+    std::shared_ptr<Cell> cell) const
+{
+  std::vector<std::shared_ptr<Cell>> neighbors;
+
+  // Check if the cell is in the grid.
+  if (cell->x < 0 || cell->x >= width || cell->y < 0 || cell->y >= height) {
+    throw std::out_of_range("Cell coordinates out of range.");
+  }
+
+  // Add the neighbors to the vector.
+  if (cell->x > 0) {
+    neighbors.push_back(grid[cell->y * width + cell->x - 1]);
+  }
+  if (cell->x < width - 1) {
+    neighbors.push_back(grid[cell->y * width + cell->x + 1]);
+  }
+  if (cell->y > 0) {
+    neighbors.push_back(grid[(cell->y - 1) * width + cell->x]);
+  }
+  if (cell->y < height - 1) {
+    neighbors.push_back(grid[(cell->y + 1) * width + cell->x]);
+  }
+
+  return neighbors;
+}

@@ -2,6 +2,10 @@
 
 #include <iostream>
 
+#include "algorithms/dijkstra.h"
+
+using SimState = GlobalState::SimState;
+
 GameLoop& GameLoop::singleton()
 {
   static GameLoop instance;
@@ -17,7 +21,7 @@ GameLoop::GameLoop()
   timer_.setInterval(1000.0 / globalState.simSpeed());
 
   // Connect the timer to the tick signal.
-  connect(&timer_, &QTimer::timeout, this, &GameLoop::tick);
+  connect(&timer_, &QTimer::timeout, this, &GameLoop::localTick);
 
   // Connect to global state signals.
   connect(
@@ -29,7 +33,7 @@ GameLoop::GameLoop()
  * Public slots.
  */
 
-void GameLoop::onSimStateChanged(GlobalState::SimState state)
+void GameLoop::onSimStateChanged(SimState state)
 {
   switch (state) {
   case GlobalState::SimState::RUNNING:
@@ -46,7 +50,39 @@ void GameLoop::onSimStateChanged(GlobalState::SimState state)
   std::cout << "Game loop updated." << std::endl;
 }
 
-void GameLoop::setLoopSpeed(int speed) { 
+void GameLoop::setSim(
+    std::shared_ptr<SearchAlgorithms::SearchAlgorithm> searchAlgorithm)
+{
+  searchAlgorithm_ = std::move(searchAlgorithm);
+}
+
+void GameLoop::setLoopSpeed(int speed)
+{
   timer_.setInterval(1000.0 / speed);
   std::cout << "Game loop updated." << std::endl;
-   }
+}
+
+/*
+ * Private slots.
+ */
+
+void GameLoop::localTick()
+{
+  if (searchAlgorithm_ == nullptr) {
+    return;
+  }
+  try {
+    auto cells = searchAlgorithm_->step();
+    emit tick();
+    emit updateGraphics(cells);
+    if (cells.empty()) {
+      timer_.stop();
+      GlobalState::singleton().setSimState(GlobalState::SimState::PAUSED);
+      emit updateGraphics(searchAlgorithm_->path());
+    }
+  } catch (SearchAlgorithms::NoPathFoundException& e) {
+    std::cout << e.what() << std::endl;
+    timer_.stop();
+    GlobalState::singleton().setSimState(GlobalState::SimState::PAUSED);
+  }
+}

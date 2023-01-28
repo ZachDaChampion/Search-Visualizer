@@ -53,12 +53,6 @@ void GlobalState::setSimType(SimType type)
   case SimType::NONE:
     std::cout << "Sim type changed to NONE" << std::endl;
     break;
-  case SimType::BFS:
-    std::cout << "Sim type changed to BFS" << std::endl;
-    break;
-  case SimType::DFS:
-    std::cout << "Sim type changed to DFS" << std::endl;
-    break;
   case SimType::DIJKSTRA:
     std::cout << "Sim type changed to DIJKSTRA" << std::endl;
     break;

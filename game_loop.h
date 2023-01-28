@@ -3,8 +3,10 @@
 
 #include <QObject>
 #include <QTimer>
+#include <memory>
 
-#include "../global_state.h"
+#include "algorithms/search_algorithm.h"
+#include "global_state.h"
 
 class GameLoop : public QObject {
   Q_OBJECT
@@ -41,11 +43,23 @@ class GameLoop : public QObject {
   void onSimStateChanged(GlobalState::SimState state);
 
   /**
+   * Change the sim type.
+   */
+  void setSim(std::shared_ptr<SearchAlgorithms::SearchAlgorithm> searchAlgorithm);
+
+  /**
    * Change the speed of the game loop.
    *
    * \param speed The speed of the game loop (ticks/second).
    */
   void setLoopSpeed(int speed);
+
+  private slots:
+
+  /**
+   * The game loop tick.
+   */
+  void localTick();
 
   signals:
 
@@ -54,13 +68,21 @@ class GameLoop : public QObject {
    */
   void tick();
 
+  /**
+   * Emit a signal that the graphics need to be updated.
+   */
+  void updateGraphics(std::vector<std::shared_ptr<Grid::Cell>> cells);
+
   private:
 
   /*
    * Data.
    */
 
-  QTimer timer_;
+  std::shared_ptr<SearchAlgorithms::SearchAlgorithm> searchAlgorithm_
+      = nullptr; // The search algorithm to use.
+
+  QTimer timer_; // The timer that drives the game loop.
 };
 
 #endif
